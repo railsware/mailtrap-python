@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Distribution / packaging
+dist/
+*.egg-info/
+
+# IntelliJ's project specific settings
+.idea/
+
+# mypy
+.mypy_cache/
+
+# tox
+.tox/
+
+# tests
+.pytest_cache
+
+# venv
+venv
