@@ -4,6 +4,10 @@ This Python package offers integration with the [official API](https://api-docs.
 
 Quickly add email sending functionality to your Python application with Mailtrap.
 
+## Compatibility with previous releases
+
+Versions of this package up to 1.0.1 were a different, unrelated project, that is now maintained as [Sendria](https://github.com/msztolcman/sendria). To continue using it, see [instructions](#information-for-version-1-users).
+
 ## Installation
 
 ### Prerequisites
@@ -97,7 +101,6 @@ client.send(mail)
 
 ### Using email template
 
-
 ```python
 import mailtrap as mt
 
@@ -128,22 +131,35 @@ cd mailtrap-python-sdk
 ```
 
 #### Install [tox](https://tox.wiki/en/latest/installation.html)
+
 `tox` is an environment orchestrator. We use it to setup local environments, run tests and execute linters.
+
 ```bash
 python -m pip install --user tox
 python -m tox --help
 ```
 
 To setup virtual environments, run tests and linters use:
+
 ```bash
 tox
 ```
+
 It will create virtual environments with all installed dependencies for each available python interpreter (starting from `python3.6`) on your machine.
 By default, they will be available in `{project}/.tox/` directory. So, for instance, to activate `python3.11` environment, run the following:
+
 ```bash
 source .tox/py311/bin/activate
 ```
 
+## Information for version 1 users
+
+If you are a version 1 user, it is advised that you upgrade to [Sendria](https://github.com/msztolcman/sendria), which is the same package, but under a new name, and with [new features](https://github.com/msztolcman/sendria#changelog). However, you can also continue using the last v1 release by locking the version in pip:
+
+```sh
+# To use the FORMER version of the mailtrap package, now known as Sendria:
+pip install --force-reinstall -v "mailtrap==1.0.1"
+```
 
 ## License
 
