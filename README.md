@@ -119,15 +119,15 @@ client.send(mail)
 
 ## Contributing
 
-Bug reports and pull requests are welcome on [GitHub](https://github.com/railsware/mailtrap-python-sdk). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on [GitHub](https://github.com/railsware/mailtrap-python). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](CODE_OF_CONDUCT.md).
 
 ### Development Environment
 
 #### Clone the repo
 
 ```bash
-https://github.com/railsware/mailtrap-python-sdk.git
-cd mailtrap-python-sdk
+https://github.com/railsware/mailtrap-python.git
+cd mailtrap-python
 ```
 
 #### Install [tox](https://tox.wiki/en/latest/installation.html)
