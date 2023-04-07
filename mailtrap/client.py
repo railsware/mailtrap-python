@@ -43,6 +43,9 @@ class MailtrapClient:
         return {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
+            "User-Agent": (
+                "mailtrap-python (https://github.com/railsware/mailtrap-python)"
+            ),
         }
 
     @staticmethod

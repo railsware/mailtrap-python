@@ -41,6 +41,9 @@ class TestMailtrapClient:
         assert client.headers == {
             "Authorization": "Bearer fake_token",
             "Content-Type": "application/json",
+            "User-Agent": (
+                "mailtrap-python (https://github.com/railsware/mailtrap-python)"
+            ),
         }
 
     @responses.activate
