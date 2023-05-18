@@ -1,3 +1,6 @@
+## [2.0.1] - 2023-05-18
+- Add User-Agent header to all requests
+
 ## [2.0.0] - 2023-03-11
 
 - Initial release of the official mailtrap.io API client.
