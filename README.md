@@ -1,3 +1,8 @@
+[![test](https://github.com/railsware/mailtrap-python/actions/workflows/main.yml/badge.svg)](https://github.com/railsware/mailtrap-python/actions/workflows/main.yml)
+[![PyPI](https://shields.io/pypi/v/mailtrap)](https://pypi.org/project/mailtrap/)
+[![downloads](https://shields.io/pypi/dm/mailtrap)](https://pypi.org/project/mailtrap/)
+
+
 # Official Mailtrap Python client
 
 This Python package offers integration with the [official API](https://api-docs.mailtrap.io/) for [Mailtrap](https://mailtrap.io).
