@@ -35,6 +35,7 @@ class TestMailtrapClient:
         [
             {"sandbox": True},
             {"inbox_id": "12345"},
+            {"bulk": True, "sandbox": True, "inbox_id": "12345"},
         ],
     )
     def test_client_validation(self, arguments: dict[str, Any]) -> None:
@@ -55,8 +56,20 @@ class TestMailtrapClient:
                 "https://example.send.com:543/api/send",
             ),
             (
+                {"api_host": "example.send.com", "sandbox": True, "inbox_id": "12345"},
+                "https://example.send.com:443/api/send/12345",
+            ),
+            (
+                {"api_host": "example.send.com", "bulk": True},
+                "https://example.send.com:443/api/send",
+            ),
+            (
                 {"sandbox": True, "inbox_id": "12345"},
                 "https://sandbox.api.mailtrap.io:443/api/send/12345",
+            ),
+            (
+                {"bulk": True},
+                "https://bulk.api.mailtrap.io:443/api/send",
             ),
         ],
     )

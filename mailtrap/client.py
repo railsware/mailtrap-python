@@ -13,6 +13,7 @@ from mailtrap.mail.base import BaseMail
 class MailtrapClient:
     DEFAULT_HOST = "send.api.mailtrap.io"
     DEFAULT_PORT = 443
+    BULK_HOST = "bulk.api.mailtrap.io"
     SANDBOX_HOST = "sandbox.api.mailtrap.io"
 
     def __init__(
@@ -20,12 +21,14 @@ class MailtrapClient:
         token: str,
         api_host: Optional[str] = None,
         api_port: int = DEFAULT_PORT,
+        bulk: bool = False,
         sandbox: bool = False,
         inbox_id: Optional[str] = None,
     ) -> None:
         self.token = token
         self.api_host = api_host
         self.api_port = api_port
+        self.bulk = bulk
         self.sandbox = sandbox
         self.inbox_id = inbox_id
 
@@ -70,6 +73,8 @@ class MailtrapClient:
             return self.api_host
         if self.sandbox:
             return self.SANDBOX_HOST
+        if self.bulk:
+            return self.BULK_HOST
         return self.DEFAULT_HOST
 
     @staticmethod
@@ -90,3 +95,6 @@ class MailtrapClient:
             raise ClientConfigurationError(
                 "`inbox_id` is not allowed in non-sandbox mode"
             )
+
+        if self.bulk and self.sandbox:
+            raise ClientConfigurationError("bulk mode is not allowed in sandbox mode")
