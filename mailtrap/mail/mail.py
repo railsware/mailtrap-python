@@ -1,6 +1,4 @@
 from typing import Any
-from typing import Dict
-from typing import List
 from typing import Optional
 
 from mailtrap.mail.address import Address
@@ -23,16 +21,16 @@ class Mail(BaseMail):
     def __init__(
         self,
         sender: Address,
-        to: List[Address],
+        to: list[Address],
         subject: str,
         text: Optional[str] = None,
         html: Optional[str] = None,
         category: Optional[str] = None,
-        cc: Optional[List[Address]] = None,
-        bcc: Optional[List[Address]] = None,
-        attachments: Optional[List[Attachment]] = None,
-        headers: Optional[Dict[str, str]] = None,
-        custom_variables: Optional[Dict[str, Any]] = None,
+        cc: Optional[list[Address]] = None,
+        bcc: Optional[list[Address]] = None,
+        attachments: Optional[list[Attachment]] = None,
+        headers: Optional[dict[str, str]] = None,
+        custom_variables: Optional[dict[str, Any]] = None,
     ) -> None:
         super().__init__(
             sender=sender,
@@ -49,7 +47,7 @@ class Mail(BaseMail):
         self.category = category
 
     @property
-    def api_data(self) -> Dict[str, Any]:
+    def api_data(self) -> dict[str, Any]:
         return self.omit_none_values(
             {
                 **super().api_data,

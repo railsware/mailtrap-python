@@ -1,9 +1,7 @@
 from abc import ABCMeta
+from collections.abc import Sequence
 from typing import Any
-from typing import Dict
-from typing import List
 from typing import Optional
-from typing import Sequence
 
 from mailtrap.mail.address import Address
 from mailtrap.mail.attachment import Attachment
@@ -16,12 +14,12 @@ class BaseMail(BaseEntity, metaclass=ABCMeta):
     def __init__(
         self,
         sender: Address,
-        to: List[Address],
-        cc: Optional[List[Address]] = None,
-        bcc: Optional[List[Address]] = None,
-        attachments: Optional[List[Attachment]] = None,
-        headers: Optional[Dict[str, str]] = None,
-        custom_variables: Optional[Dict[str, Any]] = None,
+        to: list[Address],
+        cc: Optional[list[Address]] = None,
+        bcc: Optional[list[Address]] = None,
+        attachments: Optional[list[Attachment]] = None,
+        headers: Optional[dict[str, str]] = None,
+        custom_variables: Optional[dict[str, Any]] = None,
     ) -> None:
         self.sender = sender
         self.to = to
@@ -32,7 +30,7 @@ class BaseMail(BaseEntity, metaclass=ABCMeta):
         self.custom_variables = custom_variables
 
     @property
-    def api_data(self) -> Dict[str, Any]:
+    def api_data(self) -> dict[str, Any]:
         return self.omit_none_values(
             {
                 "from": self.sender.api_data,
@@ -48,7 +46,7 @@ class BaseMail(BaseEntity, metaclass=ABCMeta):
     @staticmethod
     def get_api_data_from_list(
         items: Optional[Sequence[BaseEntity]],
-    ) -> Optional[List[Dict[str, Any]]]:
+    ) -> Optional[list[dict[str, Any]]]:
         if items is None:
             return None
 

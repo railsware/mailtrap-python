@@ -1,6 +1,5 @@
 from enum import Enum
 from typing import Any
-from typing import Dict
 from typing import Optional
 
 from mailtrap.mail.base_entity import BaseEntity
@@ -27,7 +26,7 @@ class Attachment(BaseEntity):
         self.content_id = content_id
 
     @property
-    def api_data(self) -> Dict[str, Any]:
+    def api_data(self) -> dict[str, Any]:
         return self.omit_none_values(
             {
                 "content": self.content.decode(),

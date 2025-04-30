@@ -1,5 +1,4 @@
 from typing import Any
-from typing import Dict
 from typing import Optional
 
 from mailtrap.mail.base_entity import BaseEntity
@@ -11,5 +10,5 @@ class Address(BaseEntity):
         self.name = name
 
     @property
-    def api_data(self) -> Dict[str, Any]:
+    def api_data(self) -> dict[str, Any]:
         return self.omit_none_values({"email": self.email, "name": self.name})
