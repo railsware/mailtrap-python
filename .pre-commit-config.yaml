@@ -1,6 +1,6 @@
 repos:
  - repo: https://github.com/PyCQA/flake8
-   rev: 5.0.4
+   rev: 7.2.0
    hooks:
      - id: flake8
        name: Style Guide Enforcement (flake8)
@@ -8,32 +8,32 @@ repos:
          - '--max-line-length=90'
          - '--per-file-ignores=__init__.py:F401'
  - repo: https://github.com/asottile/pyupgrade
-   rev: v2.31.0
+   rev: v3.19.0
    hooks:
      - id: pyupgrade
        name: Upgrade syntax for newer versions of the language (pyupgrade)
        args:
-         - '--py36-plus'
-# - repo: https://github.com/pycqa/isort
-#   rev: 5.10.0
-#   hooks:
-#     - id: isort
-#       name: 'Reorder Python imports'
- - repo: https://github.com/PyCQA/docformatter
-   rev: v1.5.1
+         - '--py39-plus'
+ - repo: https://github.com/pycqa/isort
+   rev: 6.0.1
    hooks:
-     - id: docformatter
-       name: 'Formats docstrings'
-       args:
-        - '--in-place'
+     - id: isort
+       name: Reorder Python imports
+# - repo: https://github.com/PyCQA/docformatter
+#   rev: v1.7.5  # incompatible with pre-commit > 4.0.0, but should be fixed in the next release
+#   hooks:
+#     - id: docformatter
+#       name: Formats docstrings
+#       args:
+#         - '--in-place '
  - repo: 'https://github.com/pre-commit/pre-commit-hooks'
-   rev: v4.1.0
+   rev: v5.0.0
    hooks:
      - id: trailing-whitespace
      - id: end-of-file-fixer
      - id: check-toml
  - repo: https://github.com/python/black
-   rev: 22.8.0
+   rev: 25.1.0
    hooks:
      - id: black
        name: Uncompromising Code Formatter (black)

@@ -1,5 +1,3 @@
-from typing import Dict
-from typing import List
 from typing import NoReturn
 from typing import Union
 
@@ -24,12 +22,12 @@ class MailtrapClient:
         self.api_host = api_host
         self.api_port = api_port
 
-    def send(self, mail: BaseMail) -> Dict[str, Union[bool, List[str]]]:
+    def send(self, mail: BaseMail) -> dict[str, Union[bool, list[str]]]:
         url = f"{self.base_url}/api/send"
         response = requests.post(url, headers=self.headers, json=mail.api_data)
 
         if response.ok:
-            data = response.json()  # type: Dict[str, Union[bool, List[str]]]
+            data: dict[str, Union[bool, list[str]]] = response.json()
             return data
 
         self._handle_failed_response(response)
@@ -39,7 +37,7 @@ class MailtrapClient:
         return f"https://{self.api_host.rstrip('/')}:{self.api_port}"
 
     @property
-    def headers(self) -> Dict[str, str]:
+    def headers(self) -> dict[str, str]:
         return {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
