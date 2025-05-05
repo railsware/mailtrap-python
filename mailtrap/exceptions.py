@@ -2,6 +2,11 @@ class MailtrapError(Exception):
     pass
 
 
+class ClientConfigurationError(MailtrapError):
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
 class APIError(MailtrapError):
     def __init__(self, status: int, errors: list[str]) -> None:
         self.status = status

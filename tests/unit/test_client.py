@@ -30,10 +30,55 @@ class TestMailtrapClient:
         props = {"token": "fake_token", **kwargs}
         return mt.MailtrapClient(**props)
 
+    @pytest.mark.parametrize(
+        "arguments",
+        [
+            {"sandbox": True},
+            {"inbox_id": "12345"},
+            {"bulk": True, "sandbox": True, "inbox_id": "12345"},
+        ],
+    )
+    def test_client_validation(self, arguments: dict[str, Any]) -> None:
+        with pytest.raises(mt.ClientConfigurationError):
+            self.get_client(**arguments)
+
     def test_base_url_should_truncate_slash_from_host(self) -> None:
         client = self.get_client(api_host="example.send.com/", api_port=543)
 
         assert client.base_url == "https://example.send.com:543"
+
+    @pytest.mark.parametrize(
+        "arguments, expected_url",
+        [
+            ({}, "https://send.api.mailtrap.io:443/api/send"),
+            (
+                {"api_host": "example.send.com", "api_port": 543},
+                "https://example.send.com:543/api/send",
+            ),
+            (
+                {"api_host": "example.send.com", "sandbox": True, "inbox_id": "12345"},
+                "https://example.send.com:443/api/send/12345",
+            ),
+            (
+                {"api_host": "example.send.com", "bulk": True},
+                "https://example.send.com:443/api/send",
+            ),
+            (
+                {"sandbox": True, "inbox_id": "12345"},
+                "https://sandbox.api.mailtrap.io:443/api/send/12345",
+            ),
+            (
+                {"bulk": True},
+                "https://bulk.api.mailtrap.io:443/api/send",
+            ),
+        ],
+    )
+    def test_api_send_url_should_return_default_sending_url(
+        self, arguments: dict[str, Any], expected_url: str
+    ) -> None:
+        client = self.get_client(**arguments)
+
+        assert client.api_send_url == expected_url
 
     def test_headers_should_return_appropriate_dict(self) -> None:
         client = self.get_client()
