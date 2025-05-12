@@ -1,3 +1,10 @@
+## [2.1.0] - 2025-05-12
+- Add sandbox mode support in MailtrapClient
+  - It requires inbox_id parameter to be set
+- Add bulk mode support in MailtrapClient
+- Drop support python 3.6 - 3.8
+- Add support for python 3.12 - 3.13
+
 ## [2.0.1] - 2023-05-18
 - Add User-Agent header to all requests
 
