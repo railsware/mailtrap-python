@@ -1,6 +1,6 @@
 [project]
 name = "mailtrap"
-version = "2.0.1"
+version = "2.1.0"
 description = "Official mailtrap.io API client"
 readme = "README.md"
 license = {file = "LICENSE.txt"}
