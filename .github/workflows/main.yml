@@ -2,6 +2,9 @@ name: Tests and checks
 
 on: push
 
+permissions:
+  contents: read
+
 jobs:
   check:
     name: Test python${{ matrix.python }} on ${{ matrix.os }}
