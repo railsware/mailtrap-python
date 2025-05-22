@@ -1,3 +1,6 @@
+## [2.2.0] - 2025-05-20
+Add Email Templates API support in MailtrapClient
+
 ## [2.1.0] - 2025-05-12
 - Add sandbox mode support in MailtrapClient
   - It requires inbox_id parameter to be set

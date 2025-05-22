@@ -122,6 +122,47 @@ client = mt.MailtrapClient(token="your-api-key")
 client.send(mail)
 ```
 
+### Managing templates
+
+Mailtrap provides a dedicated API to manage reusable email templates. The
+client exposes several helper methods which all expect your account identifier
+as the first argument:
+
+- `email_templates(account_id)` – list all templates
+- `create_email_template(account_id, data)` – create a new template
+- `update_email_template(account_id, template_id, data)` – update a template
+- `delete_email_template(account_id, template_id)` – remove a template
+
+#### Creating a template
+
+The `data` dictionary **must** contain `name`, `subject` and `category`. You can
+optionally provide `body_html` and/or `body_text` to store the template content.
+
+```python
+import mailtrap as mt
+
+client = mt.MailtrapClient(token="your-api-key")
+
+# list templates
+templates = client.email_templates(1)
+
+template_data = {
+    "name": "Welcome",
+    "subject": "Welcome on board",
+    "category": "Promotion",
+    "body_html": "<h1>Hello {{user_name}}</h1>",
+    "body_text": "Hello {{user_name}}",
+}
+
+created = client.create_email_template(1, template_data)
+
+# update template
+client.update_email_template(1, created["id"], {"subject": "New subject"})
+
+# delete template
+client.delete_email_template(1, created["id"])
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on [GitHub](https://github.com/railsware/mailtrap-python). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](CODE_OF_CONDUCT.md).
