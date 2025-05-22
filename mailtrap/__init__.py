@@ -1,4 +1,5 @@
 from .client import MailtrapClient
+from .email_template import EmailTemplate
 from .exceptions import APIError
 from .exceptions import AuthorizationError
 from .exceptions import ClientConfigurationError

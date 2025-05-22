@@ -142,3 +142,140 @@ class TestMailtrapClient:
 
         with pytest.raises(mt.APIError):
             client.send(mail)
+
+    TEMPLATES_URL = "https://mailtrap.io/api/accounts/1/email_templates"
+    TEMPLATE_DETAIL_URL = "https://mailtrap.io/api/accounts/1/email_templates/5"
+
+    @responses.activate
+    def test_email_templates_should_return_list(self) -> None:
+        response_body = [{"id": 1}, {"id": 2}]
+        responses.add(responses.GET, self.TEMPLATES_URL, json=response_body)
+
+        client = self.get_client()
+        result = client.email_templates(1)
+
+        assert result == response_body
+        assert len(responses.calls) == 1
+        request = responses.calls[0].request  # type: ignore
+        assert request.headers.items() >= client.headers.items()
+
+    @responses.activate
+    def test_email_templates_should_raise_error(self) -> None:
+        responses.add(
+            responses.GET,
+            self.TEMPLATES_URL,
+            json={"errors": ["Unauthorized"]},
+            status=401,
+        )
+
+        client = self.get_client()
+
+        with pytest.raises(mt.AuthorizationError):
+            client.email_templates(1)
+
+    @responses.activate
+    def test_email_templates_should_raise_api_error(self) -> None:
+        responses.add(
+            responses.GET,
+            self.TEMPLATES_URL,
+            json={"errors": ["fail"]},
+            status=500,
+        )
+
+        client = self.get_client()
+
+        with pytest.raises(mt.APIError):
+            client.email_templates(1)
+
+    @responses.activate
+    def test_create_email_template_should_return_created_template(self) -> None:
+        template = mt.EmailTemplate(name="Template", subject="s", category="Cat")
+        response_body = {"id": 5}
+        responses.add(
+            responses.POST,
+            self.TEMPLATES_URL,
+            json=response_body,
+            status=201,
+        )
+
+        client = self.get_client()
+        result = client.create_email_template(1, template)
+
+        assert result == response_body
+        request = responses.calls[0].request  # type: ignore
+        assert request.body == json.dumps(template.api_data).encode()
+
+    @responses.activate
+    def test_create_email_template_should_raise_error(self) -> None:
+        template = mt.EmailTemplate(name="Template", subject="s", category="Cat")
+        responses.add(
+            responses.POST,
+            self.TEMPLATES_URL,
+            json={"errors": ["fail"]},
+            status=500,
+        )
+
+        client = self.get_client()
+
+        with pytest.raises(mt.APIError):
+            client.create_email_template(1, template)
+
+    @responses.activate
+    def test_update_email_template_should_return_updated_template(self) -> None:
+        template = mt.EmailTemplate(name="Template", subject="s", category="Cat")
+        response_body = {"id": 5, "name": "Template"}
+        responses.add(
+            responses.PATCH,
+            self.TEMPLATE_DETAIL_URL,
+            json=response_body,
+        )
+
+        client = self.get_client()
+        result = client.update_email_template(1, 5, template)
+
+        assert result == response_body
+        request = responses.calls[0].request  # type: ignore
+        assert request.body == json.dumps(template.api_data).encode()
+
+    @responses.activate
+    def test_update_email_template_should_raise_error(self) -> None:
+        template = mt.EmailTemplate(name="Template", subject="s", category="Cat")
+        responses.add(
+            responses.PATCH,
+            self.TEMPLATE_DETAIL_URL,
+            json={"errors": ["fail"]},
+            status=401,
+        )
+
+        client = self.get_client()
+
+        with pytest.raises(mt.AuthorizationError):
+            client.update_email_template(1, 5, template)
+
+    @responses.activate
+    def test_delete_email_template_should_return_none(self) -> None:
+        responses.add(
+            responses.DELETE,
+            self.TEMPLATE_DETAIL_URL,
+            status=204,
+        )
+
+        client = self.get_client()
+        result = client.delete_email_template(1, 5)
+
+        assert result is None
+        assert len(responses.calls) == 1
+
+    @responses.activate
+    def test_delete_email_template_should_raise_error(self) -> None:
+        responses.add(
+            responses.DELETE,
+            self.TEMPLATE_DETAIL_URL,
+            json={"errors": ["fail"]},
+            status=500,
+        )
+
+        client = self.get_client()
+
+        with pytest.raises(mt.APIError):
+            client.delete_email_template(1, 5)

@@ -122,6 +122,44 @@ client = mt.MailtrapClient(token="your-api-key")
 client.send(mail)
 ```
 
+### Managing templates
+
+You can manage templates stored in your Mailtrap account using `MailtrapClient`.
+When creating a template the following fields are required:
+
+- `name`
+- `subject`
+- `category`
+
+Optional fields are `body_html` and `body_text`.
+
+```python
+import mailtrap as mt
+
+client = mt.MailtrapClient(token="your-api-key")
+
+# list templates
+templates = client.email_templates(account_id=1)
+
+# create template
+new_template = mt.EmailTemplate(
+    name="Welcome",
+    subject="subject",
+    category="Promotion",
+)
+created = client.create_email_template(1, new_template)
+
+# update template
+updated = client.update_email_template(
+    1,
+    created["id"],
+    mt.EmailTemplate(name="Welcome", subject="subject", category="Promotion", body_html="<div>Hi</div>")
+)
+
+# delete template
+client.delete_email_template(1, created["id"])
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on [GitHub](https://github.com/railsware/mailtrap-python). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](CODE_OF_CONDUCT.md).

@@ -1,9 +1,11 @@
+from typing import Any
 from typing import NoReturn
 from typing import Optional
 from typing import Union
 
 import requests
 
+from mailtrap.email_template import EmailTemplate
 from mailtrap.exceptions import APIError
 from mailtrap.exceptions import AuthorizationError
 from mailtrap.exceptions import ClientConfigurationError
@@ -15,12 +17,14 @@ class MailtrapClient:
     DEFAULT_PORT = 443
     BULK_HOST = "bulk.api.mailtrap.io"
     SANDBOX_HOST = "sandbox.api.mailtrap.io"
+    TEMPLATES_HOST = "mailtrap.io"
 
     def __init__(
         self,
         token: str,
         api_host: Optional[str] = None,
         api_port: int = DEFAULT_PORT,
+        app_host: Optional[str] = None,
         bulk: bool = False,
         sandbox: bool = False,
         inbox_id: Optional[str] = None,
@@ -28,6 +32,7 @@ class MailtrapClient:
         self.token = token
         self.api_host = api_host
         self.api_port = api_port
+        self.app_host = app_host
         self.bulk = bulk
         self.sandbox = sandbox
         self.inbox_id = inbox_id
@@ -45,9 +50,64 @@ class MailtrapClient:
 
         self._handle_failed_response(response)
 
+    def email_templates(self, account_id: int) -> list[dict[str, Any]]:
+        response = requests.get(self._templates_url(account_id), headers=self.headers)
+
+        if response.ok:
+            data: list[dict[str, Any]] = response.json()
+            return data
+
+        self._handle_failed_response(response)
+
+    def create_email_template(
+        self, account_id: int, template: Union[EmailTemplate, dict[str, Any]]
+    ) -> dict[str, Any]:
+        json_data = template.api_data if isinstance(template, EmailTemplate) else template
+        response = requests.post(
+            self._templates_url(account_id), headers=self.headers, json=json_data
+        )
+
+        if response.status_code == 201:
+            return response.json()
+
+        self._handle_failed_response(response)
+
+    def update_email_template(
+        self,
+        account_id: int,
+        template_id: int,
+        template: Union[EmailTemplate, dict[str, Any]],
+    ) -> dict[str, Any]:
+        json_data = template.api_data if isinstance(template, EmailTemplate) else template
+        response = requests.patch(
+            self._templates_url(account_id, template_id),
+            headers=self.headers,
+            json=json_data,
+        )
+
+        if response.ok:
+            return response.json()
+
+        self._handle_failed_response(response)
+
+    def delete_email_template(self, account_id: int, template_id: int) -> None:
+        response = requests.delete(
+            self._templates_url(account_id, template_id), headers=self.headers
+        )
+
+        if response.status_code == 204:
+            return None
+
+        self._handle_failed_response(response)
+
     @property
     def base_url(self) -> str:
         return f"https://{self._host.rstrip('/')}:{self.api_port}"
+
+    @property
+    def app_base_url(self) -> str:
+        host = self.app_host if self.app_host else self.TEMPLATES_HOST
+        return f"https://{host.rstrip('/')}"
 
     @property
     def api_send_url(self) -> str:
@@ -66,6 +126,12 @@ class MailtrapClient:
                 "mailtrap-python (https://github.com/railsware/mailtrap-python)"
             ),
         }
+
+    def _templates_url(self, account_id: int, template_id: Optional[int] = None) -> str:
+        url = f"{self.app_base_url}/api/accounts/{account_id}/email_templates"
+        if template_id is not None:
+            url = f"{url}/{template_id}"
+        return url
 
     @property
     def _host(self) -> str:
