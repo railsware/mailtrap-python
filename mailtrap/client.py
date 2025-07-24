@@ -8,6 +8,7 @@ from mailtrap.exceptions import APIError
 from mailtrap.exceptions import AuthorizationError
 from mailtrap.exceptions import ClientConfigurationError
 from mailtrap.mail.base import BaseMail
+from mailtrap.project.base import BaseProject
 
 
 class MailtrapClient:
@@ -24,6 +25,7 @@ class MailtrapClient:
         bulk: bool = False,
         sandbox: bool = False,
         inbox_id: Optional[str] = None,
+        account_id: Optional[str] = None,
     ) -> None:
         self.token = token
         self.api_host = api_host
@@ -31,12 +33,24 @@ class MailtrapClient:
         self.bulk = bulk
         self.sandbox = sandbox
         self.inbox_id = inbox_id
+        self.account_id = account_id
 
         self._validate_itself()
 
     def send(self, mail: BaseMail) -> dict[str, Union[bool, list[str]]]:
         response = requests.post(
             self.api_send_url, headers=self.headers, json=mail.api_data
+        )
+
+        if response.ok:
+            data: dict[str, Union[bool, list[str]]] = response.json()
+            return data
+
+        self._handle_failed_response(response)
+
+    def create_project(self, project: BaseProject) -> dict[str, Union[bool, list[str]]]:
+        response = requests.post(
+            self.api_create_project_url, headers=self.headers, json=project.api_data
         )
 
         if response.ok:
@@ -54,6 +68,14 @@ class MailtrapClient:
         url = f"{self.base_url}/api/send"
         if self.sandbox and self.inbox_id:
             return f"{url}/{self.inbox_id}"
+
+        return url
+
+    @property
+    def api_create_project_url(self) -> str:
+        url = f"{self.base_url}/api/accounts"
+        if self.sandbox and self.account_id:
+            return f"{url}/{self.account_id}/projects"
 
         return url
 
@@ -98,3 +120,6 @@ class MailtrapClient:
 
         if self.bulk and self.sandbox:
             raise ClientConfigurationError("bulk mode is not allowed in sandbox mode")
+
+        if self.sandbox and not self.account_id:
+            raise ClientConfigurationError("`account_id` is required for sandbox mode")

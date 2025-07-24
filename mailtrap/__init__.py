@@ -10,3 +10,6 @@ from .mail import BaseMail
 from .mail import Disposition
 from .mail import Mail
 from .mail import MailFromTemplate
+from .project import BaseProject
+from .project import Name
+from .project import Project
