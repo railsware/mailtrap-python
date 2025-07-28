@@ -44,7 +44,7 @@ class ProjectsApiClient(BaseHttpApiClient):
     
     def delete(self, account_id: str, project_id: str) -> DeletedObject:
         response: RESPONSE_TYPE = cast(RESPONSE_TYPE, self._request(
-            HttpMethod.DELTE, 
+            HttpMethod.DELETE, 
             self._build_url(account_id, project_id),
         ))
         return DeletedObject(response["id"])

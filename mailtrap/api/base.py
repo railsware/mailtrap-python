@@ -14,7 +14,7 @@ class HttpMethod(Enum):
     POST = "POST"
     PUT = "PUT"
     PATCH = "PATCH"
-    DELTE = "DELETE"
+    DELETE = "DELETE"
 
 
 def _extract_errors(data: Dict[str, Any]) -> List[str]:
