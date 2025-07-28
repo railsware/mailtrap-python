@@ -4,6 +4,7 @@ from typing import Union
 
 import requests
 
+from mailtrap.api.projects import ProjectsApiClient
 from mailtrap.exceptions import APIError
 from mailtrap.exceptions import AuthorizationError
 from mailtrap.exceptions import ClientConfigurationError
@@ -34,10 +35,15 @@ class MailtrapClient:
 
         self._validate_itself()
 
+        self._http_client = requests.Session()
+        self._http_client.headers.update(self.headers)
+
+    @property
+    def projects_api(self) -> ProjectsApiClient:
+        return ProjectsApiClient(self._http_client)
+
     def send(self, mail: BaseMail) -> dict[str, Union[bool, list[str]]]:
-        response = requests.post(
-            self.api_send_url, headers=self.headers, json=mail.api_data
-        )
+        response = self._http_client.post(self.api_send_url, json=mail.api_data)
 
         if response.ok:
             data: dict[str, Union[bool, list[str]]] = response.json()
