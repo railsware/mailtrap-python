@@ -4,10 +4,12 @@ from typing import Union
 
 import requests
 
-from mailtrap.api.projects import ProjectsApiClient
+from mailtrap.api.testing import TestingApi
+from mailtrap.config import MAILTRAP_HOST
 from mailtrap.exceptions import APIError
 from mailtrap.exceptions import AuthorizationError
 from mailtrap.exceptions import ClientConfigurationError
+from mailtrap.http import HttpClient
 from mailtrap.mail.base import BaseMail
 
 
@@ -25,6 +27,7 @@ class MailtrapClient:
         bulk: bool = False,
         sandbox: bool = False,
         inbox_id: Optional[str] = None,
+        account_id: Optional[str] = None,
     ) -> None:
         self.token = token
         self.api_host = api_host
@@ -32,18 +35,22 @@ class MailtrapClient:
         self.bulk = bulk
         self.sandbox = sandbox
         self.inbox_id = inbox_id
+        self.account_id = account_id
 
         self._validate_itself()
 
-        self._http_client = requests.Session()
-        self._http_client.headers.update(self.headers)
-
     @property
-    def projects_api(self) -> ProjectsApiClient:
-        return ProjectsApiClient(self._http_client)
+    def testing(self) -> TestingApi:
+        if not self.account_id:
+            raise ClientConfigurationError("`account_id` is required for Testing API")
+
+        http_client = HttpClient(host=MAILTRAP_HOST, headers=self.headers)
+        return TestingApi(account_id=self.account_id, client=http_client)
 
     def send(self, mail: BaseMail) -> dict[str, Union[bool, list[str]]]:
-        response = self._http_client.post(self.api_send_url, json=mail.api_data)
+        response = requests.post(
+            self.api_send_url, headers=self.headers, json=mail.api_data
+        )
 
         if response.ok:
             data: dict[str, Union[bool, list[str]]] = response.json()
