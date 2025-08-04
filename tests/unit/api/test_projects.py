@@ -7,11 +7,11 @@ from mailtrap.api.resources.projects import ProjectsApi
 from mailtrap.config import MAILTRAP_HOST
 from mailtrap.exceptions import APIError
 from mailtrap.http import HttpClient
-from mailtrap.models.base import DeletedObject
-from mailtrap.models.projects import Project
+from mailtrap.schemas.base import DeletedObject
+from mailtrap.schemas.projects import Project
 
 ACCOUNT_ID = "321"
-PROJECT_ID = "123"
+PROJECT_ID = 123
 BASE_PROJECTS_URL = f"https://{MAILTRAP_HOST}/api/accounts/{ACCOUNT_ID}/projects"
 
 

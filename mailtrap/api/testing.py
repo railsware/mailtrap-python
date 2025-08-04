@@ -1,11 +1,15 @@
+from typing import Optional
 
-from mailtrap.api.resources.projects import ProjectsApi 
+from mailtrap.api.resources.projects import ProjectsApi
 from mailtrap.http import HttpClient
 
 
 class TestingApi:
-    def __init__(self, account_id: str, client: HttpClient) -> None:
+    def __init__(
+        self, client: HttpClient, account_id: str, inbox_id: Optional[str] = None
+    ) -> None:
         self.account_id = account_id
+        self.inbox_id = inbox_id
         self.client = client
 
     @property

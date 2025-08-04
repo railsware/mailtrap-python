@@ -19,37 +19,38 @@ class MailtrapClient:
     BULK_HOST = "bulk.api.mailtrap.io"
     SANDBOX_HOST = "sandbox.api.mailtrap.io"
 
+    _default_token: Optional[str] = None
+
     def __init__(
         self,
-        token: str,
         api_host: Optional[str] = None,
         api_port: int = DEFAULT_PORT,
         bulk: bool = False,
         sandbox: bool = False,
         inbox_id: Optional[str] = None,
-        account_id: Optional[str] = None,
     ) -> None:
-        self.token = token
         self.api_host = api_host
         self.api_port = api_port
         self.bulk = bulk
         self.sandbox = sandbox
         self.inbox_id = inbox_id
-        self.account_id = account_id
 
         self._validate_itself()
 
-    @property
-    def testing(self) -> TestingApi:
-        if not self.account_id:
-            raise ClientConfigurationError("`account_id` is required for Testing API")
+    @classmethod
+    def configure_access_token(cls, token: str) -> None:
+        cls._default_token = token
 
-        http_client = HttpClient(host=MAILTRAP_HOST, headers=self.headers)
-        return TestingApi(account_id=self.account_id, client=http_client)
+    @classmethod
+    def get_testing_api(
+        cls, account_id: str, inbox_id: Optional[str] = None
+    ) -> TestingApi:
+        http_client = HttpClient(host=MAILTRAP_HOST, headers=cls.get_default_headers())
+        return TestingApi(account_id=account_id, inbox_id=inbox_id, client=http_client)
 
     def send(self, mail: BaseMail) -> dict[str, Union[bool, list[str]]]:
         response = requests.post(
-            self.api_send_url, headers=self.headers, json=mail.api_data
+            self.api_send_url, headers=self.get_default_headers(), json=mail.api_data
         )
 
         if response.ok:
@@ -70,10 +71,16 @@ class MailtrapClient:
 
         return url
 
-    @property
-    def headers(self) -> dict[str, str]:
+    @classmethod
+    def get_default_headers(cls) -> dict[str, str]:
+        if cls._default_token is None:
+            raise ValueError(
+                "Access token is not configured. "
+                "Call MailtrapClient.configure_token(...) first."
+            )
+
         return {
-            "Authorization": f"Bearer {self.token}",
+            "Authorization": f"Bearer {cls._default_token}",
             "Content-Type": "application/json",
             "User-Agent": (
                 "mailtrap-python (https://github.com/railsware/mailtrap-python)"

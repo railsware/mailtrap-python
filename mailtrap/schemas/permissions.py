@@ -1,9 +1,6 @@
-from dataclasses import dataclass
-
-from mailtrap.models.base import BaseModel
+from pydantic import BaseModel
 
 
-@dataclass
 class Permissions(BaseModel):
     can_read: bool
     can_update: bool

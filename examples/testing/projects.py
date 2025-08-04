@@ -1,10 +1,7 @@
-import os
-import sys
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-
 from typing import Optional
+
 from mailtrap import MailtrapClient
-from mailtrap.models.projects import Project
+from mailtrap.schemas.projects import Project
 
 API_TOKEN = "YOU_API_TOKEN"
 ACCOUNT_ID = "YOU_ACCOUNT_ID"
@@ -17,14 +14,15 @@ def find_project_by_name(project_name: str, projects: list[Project]) -> Optional
     return None
 
 
-client = MailtrapClient(token=API_TOKEN, account_id=ACCOUNT_ID)
-api = client.testing.projects
+MailtrapClient.configure_access_token(API_TOKEN)
+testing_api = MailtrapClient.get_testing_api(ACCOUNT_ID)
+projects_api = testing_api.projects
 
 project_name = "Example-project"
 
-created_project = api.create(project_name=project_name)
-projects = api.get_list()
+created_project = projects_api.create(project_name=project_name)
+projects = projects_api.get_list()
 project_id = find_project_by_name(project_name, projects)
-project = api.get_by_id(project_id)
-updated_projected = api.update(project_id, "Updated-project-name")
-api.delete(project_id)
+project = projects_api.get_by_id(project_id)
+updated_projected = projects_api.update(project_id, "Updated-project-name")
+deleted_object = projects_api.delete(project_id)
