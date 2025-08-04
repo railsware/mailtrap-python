@@ -27,8 +27,7 @@ class TestMailtrapClient:
 
     @staticmethod
     def get_client(**kwargs: Any) -> mt.MailtrapClient:
-        props = {**kwargs}
-        mt.MailtrapClient.configure_access_token("fake_token")
+        props = {"token": "fake_token", **kwargs}
         return mt.MailtrapClient(**props)
 
     @pytest.mark.parametrize(
@@ -84,7 +83,7 @@ class TestMailtrapClient:
     def test_headers_should_return_appropriate_dict(self) -> None:
         client = self.get_client()
 
-        assert client.get_default_headers() == {
+        assert client.get_headers() == {
             "Authorization": "Bearer fake_token",
             "Content-Type": "application/json",
             "User-Agent": (
@@ -104,7 +103,7 @@ class TestMailtrapClient:
         assert result == response_body
         assert len(responses.calls) == 1
         request = responses.calls[0].request  # type: ignore
-        assert request.headers.items() >= client.get_default_headers().items()
+        assert request.headers.items() >= client.get_headers().items()
         assert request.body == json.dumps(mail.api_data).encode()
 
     @responses.activate
