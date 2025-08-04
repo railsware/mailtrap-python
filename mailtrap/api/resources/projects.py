@@ -1,6 +1,7 @@
 from mailtrap.http import HttpClient
 from mailtrap.schemas.base import DeletedObject
 from mailtrap.schemas.projects import Project
+from mailtrap.schemas.projects import ProjectInput
 
 
 class ProjectsApi:
@@ -19,6 +20,7 @@ class ProjectsApi:
         return Project(**response)
 
     def create(self, project_name: str) -> Project:
+        ProjectInput(name=project_name)
         response = self.client.post(
             f"/api/accounts/{self.account_id}/projects",
             json={"project": {"name": project_name}},
@@ -26,6 +28,7 @@ class ProjectsApi:
         return Project(**response)
 
     def update(self, project_id: int, project_name: str) -> Project:
+        ProjectInput(name=project_name)
         response = self.client.patch(
             f"/api/accounts/{self.account_id}/projects/{project_id}",
             json={"project": {"name": project_name}},

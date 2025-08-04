@@ -32,8 +32,8 @@ class HttpClient:
         status_code = response.status_code
         try:
             data = response.json()
-        except ValueError:
-            raise APIError(status_code, errors=["Unknown Error"])
+        except ValueError as exc:
+            raise APIError(status_code, errors=["Unknown Error"]) from exc
 
         errors = _extract_errors(data)
 

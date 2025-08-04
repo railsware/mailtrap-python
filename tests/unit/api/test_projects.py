@@ -2,6 +2,7 @@ from typing import Any
 
 import pytest
 import responses
+from pydantic import ValidationError
 
 from mailtrap.api.resources.projects import ProjectsApi
 from mailtrap.config import MAILTRAP_HOST
@@ -40,6 +41,34 @@ def sample_project_dict() -> dict[str, Any]:
 
 
 class TestProjectsApi:
+
+    @pytest.mark.parametrize(
+        "status_code,response_json,expected_error_message",
+        [
+            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
+            (403, {"errors": "Access forbidden"}, "Access forbidden"),
+        ],
+    )
+    @responses.activate
+    def test_get_list_should_raise_api_errors(
+        self,
+        client: ProjectsApi,
+        status_code: int,
+        response_json: dict,
+        expected_error_message: str,
+    ) -> None:
+        responses.add(
+            responses.GET,
+            BASE_PROJECTS_URL,
+            status=status_code,
+            json=response_json,
+        )
+
+        with pytest.raises(APIError) as exc_info:
+            client.get_list()
+
+        assert expected_error_message in str(exc_info.value)
+
     @responses.activate
     def test_get_list_should_return_project_list(
         self, client: ProjectsApi, sample_project_dict: dict
@@ -57,20 +86,34 @@ class TestProjectsApi:
         assert all(isinstance(p, Project) for p in projects)
         assert projects[0].id == PROJECT_ID
 
+    @pytest.mark.parametrize(
+        "status_code,response_json,expected_error_message",
+        [
+            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
+            (403, {"errors": "Access forbidden"}, "Access forbidden"),
+            (404, {"error": "Not Found"}, "Not Found"),
+        ],
+    )
     @responses.activate
-    def test_get_by_id_should_raise_not_found_error(self, client: ProjectsApi) -> None:
+    def test_get_by_id_should_raise_api_errors(
+        self,
+        client: ProjectsApi,
+        status_code: int,
+        response_json: dict,
+        expected_error_message: str,
+    ) -> None:
         url = f"{BASE_PROJECTS_URL}/{PROJECT_ID}"
         responses.add(
             responses.GET,
             url,
-            status=404,
-            json={"error": "Not Found"},
+            status=status_code,
+            json=response_json,
         )
 
         with pytest.raises(APIError) as exc_info:
             client.get_by_id(PROJECT_ID)
 
-        assert "Not Found" in str(exc_info)
+        assert expected_error_message in str(exc_info.value)
 
     @responses.activate
     def test_get_by_id_should_return_single_project(
@@ -89,6 +132,54 @@ class TestProjectsApi:
         assert isinstance(project, Project)
         assert project.id == PROJECT_ID
 
+    @pytest.mark.parametrize(
+        "status_code,response_json,expected_error_message",
+        [
+            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
+            (403, {"errors": "Access forbidden"}, "Access forbidden"),
+        ],
+    )
+    @responses.activate
+    def test_create_should_raise_api_errors(
+        self,
+        client: ProjectsApi,
+        status_code: int,
+        response_json: dict,
+        expected_error_message: str,
+    ) -> None:
+        responses.add(
+            responses.POST,
+            BASE_PROJECTS_URL,
+            status=status_code,
+            json=response_json,
+        )
+
+        with pytest.raises(APIError) as exc_info:
+            client.create(project_name="New Project")
+
+        assert expected_error_message in str(exc_info.value)
+
+    @pytest.mark.parametrize(
+        "project_name, expected_errors",
+        [
+            (None, ["Input should be a valid string"]),
+            ("", ["String should have at least 2 characters"]),
+            ("a", ["String should have at least 2 characters"]),
+            ("a" * 101, ["String should have at most 100 characters"]),
+        ],
+    )
+    def test_create_should_raise_validation_error_on_pydantic_validation(
+        self, client: ProjectsApi, project_name: str, expected_errors: list[str]
+    ) -> None:
+        with pytest.raises(ValidationError) as exc_info:
+            client.create(project_name=project_name)
+
+        errors = exc_info.value.errors()
+        error_messages = [err["msg"] for err in errors]
+
+        for expected_msg in expected_errors:
+            assert any(expected_msg in actual_msg for actual_msg in error_messages)
+
     @responses.activate
     def test_create_should_return_new_project(
         self, client: ProjectsApi, sample_project_dict: dict
@@ -105,20 +196,55 @@ class TestProjectsApi:
         assert isinstance(project, Project)
         assert project.name == "Test Project"
 
+    @pytest.mark.parametrize(
+        "status_code,response_json,expected_error_message",
+        [
+            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
+            (403, {"errors": "Access forbidden"}, "Access forbidden"),
+            (404, {"error": "Not Found"}, "Not Found"),
+        ],
+    )
     @responses.activate
-    def test_update_should_raise_not_found_error(self, client: ProjectsApi) -> None:
+    def test_update_should_raise_api_errors(
+        self,
+        client: ProjectsApi,
+        status_code: int,
+        response_json: dict,
+        expected_error_message: str,
+    ) -> None:
         url = f"{BASE_PROJECTS_URL}/{PROJECT_ID}"
         responses.add(
             responses.PATCH,
             url,
-            status=404,
-            json={"error": "Not Found"},
+            status=status_code,
+            json=response_json,
         )
 
         with pytest.raises(APIError) as exc_info:
             client.update(PROJECT_ID, project_name="Update Project Name")
 
-        assert "Not Found" in str(exc_info)
+        assert expected_error_message in str(exc_info.value)
+
+    @pytest.mark.parametrize(
+        "project_name, expected_errors",
+        [
+            (None, ["Input should be a valid string"]),
+            ("", ["String should have at least 2 characters"]),
+            ("a", ["String should have at least 2 characters"]),
+            ("a" * 101, ["String should have at most 100 characters"]),
+        ],
+    )
+    def test_update_should_raise_validation_error_on_pydantic_validation(
+        self, client: ProjectsApi, project_name: str, expected_errors: list[str]
+    ) -> None:
+        with pytest.raises(ValidationError) as exc_info:
+            client.update(project_id=PROJECT_ID, project_name=project_name)
+
+        errors = exc_info.value.errors()
+        error_messages = [err["msg"] for err in errors]
+
+        for expected_msg in expected_errors:
+            assert any(expected_msg in actual_msg for actual_msg in error_messages)
 
     @responses.activate
     def test_update_should_return_updated_project(
@@ -141,20 +267,34 @@ class TestProjectsApi:
         assert isinstance(project, Project)
         assert project.name == updated_name
 
+    @pytest.mark.parametrize(
+        "status_code,response_json,expected_error_message",
+        [
+            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
+            (403, {"errors": "Access forbidden"}, "Access forbidden"),
+            (404, {"error": "Not Found"}, "Not Found"),
+        ],
+    )
     @responses.activate
-    def test_delete_should_raise_not_found_error(self, client: ProjectsApi) -> None:
+    def test_delete_should_raise_api_errors(
+        self,
+        client: ProjectsApi,
+        status_code: int,
+        response_json: dict,
+        expected_error_message: str,
+    ) -> None:
         url = f"{BASE_PROJECTS_URL}/{PROJECT_ID}"
         responses.add(
             responses.DELETE,
             url,
-            status=404,
-            json={"error": "Not Found"},
+            status=status_code,
+            json=response_json,
         )
 
         with pytest.raises(APIError) as exc_info:
             client.delete(PROJECT_ID)
 
-        assert "Not Found" in str(exc_info)
+        assert expected_error_message in str(exc_info.value)
 
     @responses.activate
     def test_delete_should_return_deleted_object(self, client: ProjectsApi) -> None:

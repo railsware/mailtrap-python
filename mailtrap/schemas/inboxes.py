@@ -1,6 +1,7 @@
-
 from typing import Optional
+
 from pydantic import BaseModel
+
 from mailtrap.schemas.permissions import Permissions
 
 
@@ -26,5 +27,7 @@ class Inbox(BaseModel):
     pop3_ports: list[int]
     max_message_size: int
     permissions: Permissions
-    password: Optional[str] = None  # Password is only available if you have admin permissions for the inbox.
+    password: Optional[str] = (
+        None  # Password is only available if you have admin permissions for the inbox.
+    )
     last_message_sent_at: Optional[str] = None
