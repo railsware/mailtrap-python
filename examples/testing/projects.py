@@ -1,8 +1,8 @@
 import logging
 from typing import Optional
 
-from mailtrap import MailtrapClient
-from mailtrap.schemas.projects import Project
+from mailtrap import MailtrapApiClient
+from mailtrap.models.projects import Project
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -21,7 +21,7 @@ def find_project_by_name(project_name: str, projects: list[Project]) -> Optional
 
 logging.info("Starting Mailtrap Testing API example...")
 
-client = MailtrapClient(token=API_TOKEN)
+client = MailtrapApiClient(token=API_TOKEN)
 testing_api = client.get_testing_api(ACCOUNT_ID)
 projects_api = testing_api.projects
 

@@ -83,7 +83,7 @@ class TestMailtrapClient:
     def test_headers_should_return_appropriate_dict(self) -> None:
         client = self.get_client()
 
-        assert client.get_headers() == {
+        assert client.headers == {
             "Authorization": "Bearer fake_token",
             "Content-Type": "application/json",
             "User-Agent": (
@@ -103,7 +103,7 @@ class TestMailtrapClient:
         assert result == response_body
         assert len(responses.calls) == 1
         request = responses.calls[0].request  # type: ignore
-        assert request.headers.items() >= client.get_headers().items()
+        assert request.headers.items() >= client.headers.items()
         assert request.body == json.dumps(mail.api_data).encode()
 
     @responses.activate
@@ -142,3 +142,20 @@ class TestMailtrapClient:
 
         with pytest.raises(mt.APIError):
             client.send(mail)
+
+
+class TestMailtrapApiClient:
+    @pytest.fixture
+    def api_client(self):
+        return mt.MailtrapApiClient(token="fake_token")
+
+    def test_headers_should_return_appropriate_dict(
+        self, api_client: mt.MailtrapApiClient
+    ) -> None:
+        assert api_client.get_headers() == {
+            "Authorization": "Bearer fake_token",
+            "Content-Type": "application/json",
+            "User-Agent": (
+                "mailtrap-python (https://github.com/railsware/mailtrap-python)"
+            ),
+        }

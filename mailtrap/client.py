@@ -5,7 +5,7 @@ from typing import Union
 import requests
 
 from mailtrap.api.testing import TestingApi
-from mailtrap.config import MAILTRAP_HOST
+from mailtrap.config import GENERAL_ENDPOINT
 from mailtrap.exceptions import APIError
 from mailtrap.exceptions import AuthorizationError
 from mailtrap.exceptions import ClientConfigurationError
@@ -37,15 +37,9 @@ class MailtrapClient:
 
         self._validate_itself()
 
-    def get_testing_api(self, account_id: str) -> TestingApi:
-        http_client = HttpClient(host=MAILTRAP_HOST, headers=self.get_headers())
-        return TestingApi(
-            account_id=account_id, inbox_id=self.inbox_id, client=http_client
-        )
-
     def send(self, mail: BaseMail) -> dict[str, Union[bool, list[str]]]:
         response = requests.post(
-            self.api_send_url, headers=self.get_headers(), json=mail.api_data
+            self.api_send_url, headers=self.headers, json=mail.api_data
         )
 
         if response.ok:
@@ -66,7 +60,8 @@ class MailtrapClient:
 
         return url
 
-    def get_headers(self) -> dict[str, str]:
+    @property
+    def headers(self) -> dict[str, str]:
         return {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
@@ -106,3 +101,21 @@ class MailtrapClient:
 
         if self.bulk and self.sandbox:
             raise ClientConfigurationError("bulk mode is not allowed in sandbox mode")
+
+
+class MailtrapApiClient:
+    def __init__(self, token: str) -> None:
+        self.token = token
+
+    def testing_api(self, account_id: str, inbox_id: str) -> TestingApi:
+        http_client = HttpClient(host=GENERAL_ENDPOINT, headers=self.get_headers())
+        return TestingApi(account_id=account_id, inbox_id=inbox_id, client=http_client)
+
+    def get_headers(self) -> dict[str, str]:
+        return {
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json",
+            "User-Agent": (
+                "mailtrap-python (https://github.com/railsware/mailtrap-python)"
+            ),
+        }

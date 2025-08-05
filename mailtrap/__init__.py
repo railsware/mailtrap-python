@@ -1,3 +1,4 @@
+from .client import MailtrapApiClient
 from .client import MailtrapClient
 from .exceptions import APIError
 from .exceptions import AuthorizationError

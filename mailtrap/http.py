@@ -1,7 +1,6 @@
 from typing import Any
 from typing import NoReturn
 from typing import Optional
-from typing import TypeVar
 
 from requests import Response
 from requests import Session
@@ -9,8 +8,6 @@ from requests import Session
 from mailtrap.config import DEFAULT_REQUEST_TIMEOUT
 from mailtrap.exceptions import APIError
 from mailtrap.exceptions import AuthorizationError
-
-T = TypeVar("T")
 
 
 class HttpClient:
@@ -42,52 +39,38 @@ class HttpClient:
 
         raise APIError(status_code, errors=errors)
 
-    def _process_response(self, response: Response, expected_type: type[T]) -> T:
+    def _process_response(self, response: Response) -> Any:
         if not response.ok:
             self._handle_failed_response(response)
-        data = response.json()
-        if not isinstance(data, expected_type):
-            raise APIError(
-                response.status_code,
-                errors=[f"Expected response type {expected_type.__name__}"],
-            )
-        return data
+        return response.json()
 
-    def _process_response_dict(self, response: Response) -> dict[str, Any]:
-        return self._process_response(response, dict)
-
-    def _process_response_list(self, response: Response) -> list[dict[str, Any]]:
-        return self._process_response(response, list)
-
-    def get(self, path: str, params: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+    def get(self, path: str, params: Optional[dict[str, Any]] = None) -> Any:
         response = self._session.get(
             self._url(path), params=params, timeout=self._timeout
         )
-        return self._process_response_dict(response)
+        return self._process_response(response)
 
-    def list(
-        self, path: str, params: Optional[dict[str, Any]] = None
-    ) -> list[dict[str, Any]]:
+    def list(self, path: str, params: Optional[dict[str, Any]] = None) -> Any:
         response = self._session.get(
             self._url(path), params=params, timeout=self._timeout
         )
-        return self._process_response_list(response)
+        return self._process_response(response)
 
-    def post(self, path: str, json: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+    def post(self, path: str, json: Optional[dict[str, Any]] = None) -> Any:
         response = self._session.post(self._url(path), json=json, timeout=self._timeout)
-        return self._process_response_dict(response)
+        return self._process_response(response)
 
-    def put(self, path: str, json: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+    def put(self, path: str, json: Optional[dict[str, Any]] = None) -> Any:
         response = self._session.put(self._url(path), json=json, timeout=self._timeout)
-        return self._process_response_dict(response)
+        return self._process_response(response)
 
-    def patch(self, path: str, json: Optional[dict[str, Any]] = None) -> dict[str, Any]:
+    def patch(self, path: str, json: Optional[dict[str, Any]] = None) -> Any:
         response = self._session.patch(self._url(path), json=json, timeout=self._timeout)
-        return self._process_response_dict(response)
+        return self._process_response(response)
 
-    def delete(self, path: str) -> dict[str, Any]:
+    def delete(self, path: str) -> Any:
         response = self._session.delete(self._url(path), timeout=self._timeout)
-        return self._process_response_dict(response)
+        return self._process_response(response)
 
 
 def _extract_errors(data: dict[str, Any]) -> list[str]:

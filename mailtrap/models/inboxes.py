@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from mailtrap.schemas.permissions import Permissions
+from mailtrap.models.permissions import Permissions
 
 
 class Inbox(BaseModel):

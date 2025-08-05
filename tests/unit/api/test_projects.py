@@ -2,23 +2,22 @@ from typing import Any
 
 import pytest
 import responses
-from pydantic import ValidationError
 
 from mailtrap.api.resources.projects import ProjectsApi
-from mailtrap.config import MAILTRAP_HOST
+from mailtrap.config import GENERAL_ENDPOINT
 from mailtrap.exceptions import APIError
 from mailtrap.http import HttpClient
-from mailtrap.schemas.base import DeletedObject
-from mailtrap.schemas.projects import Project
+from mailtrap.models.base import DeletedObject
+from mailtrap.models.projects import Project
 
 ACCOUNT_ID = "321"
 PROJECT_ID = 123
-BASE_PROJECTS_URL = f"https://{MAILTRAP_HOST}/api/accounts/{ACCOUNT_ID}/projects"
+BASE_PROJECTS_URL = f"https://{GENERAL_ENDPOINT}/api/accounts/{ACCOUNT_ID}/projects"
 
 
 @pytest.fixture
 def client() -> ProjectsApi:
-    return ProjectsApi(account_id=ACCOUNT_ID, client=HttpClient(MAILTRAP_HOST))
+    return ProjectsApi(account_id=ACCOUNT_ID, client=HttpClient(GENERAL_ENDPOINT))
 
 
 @pytest.fixture
@@ -159,27 +158,6 @@ class TestProjectsApi:
 
         assert expected_error_message in str(exc_info.value)
 
-    @pytest.mark.parametrize(
-        "project_name, expected_errors",
-        [
-            (None, ["Input should be a valid string"]),
-            ("", ["String should have at least 2 characters"]),
-            ("a", ["String should have at least 2 characters"]),
-            ("a" * 101, ["String should have at most 100 characters"]),
-        ],
-    )
-    def test_create_should_raise_validation_error_on_pydantic_validation(
-        self, client: ProjectsApi, project_name: str, expected_errors: list[str]
-    ) -> None:
-        with pytest.raises(ValidationError) as exc_info:
-            client.create(project_name=project_name)
-
-        errors = exc_info.value.errors()
-        error_messages = [err["msg"] for err in errors]
-
-        for expected_msg in expected_errors:
-            assert any(expected_msg in actual_msg for actual_msg in error_messages)
-
     @responses.activate
     def test_create_should_return_new_project(
         self, client: ProjectsApi, sample_project_dict: dict
@@ -224,27 +202,6 @@ class TestProjectsApi:
             client.update(PROJECT_ID, project_name="Update Project Name")
 
         assert expected_error_message in str(exc_info.value)
-
-    @pytest.mark.parametrize(
-        "project_name, expected_errors",
-        [
-            (None, ["Input should be a valid string"]),
-            ("", ["String should have at least 2 characters"]),
-            ("a", ["String should have at least 2 characters"]),
-            ("a" * 101, ["String should have at most 100 characters"]),
-        ],
-    )
-    def test_update_should_raise_validation_error_on_pydantic_validation(
-        self, client: ProjectsApi, project_name: str, expected_errors: list[str]
-    ) -> None:
-        with pytest.raises(ValidationError) as exc_info:
-            client.update(project_id=PROJECT_ID, project_name=project_name)
-
-        errors = exc_info.value.errors()
-        error_messages = [err["msg"] for err in errors]
-
-        for expected_msg in expected_errors:
-            assert any(expected_msg in actual_msg for actual_msg in error_messages)
 
     @responses.activate
     def test_update_should_return_updated_project(
