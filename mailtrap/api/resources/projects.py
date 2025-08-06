@@ -1,5 +1,5 @@
 from mailtrap.http import HttpClient
-from mailtrap.models.base import DeletedObject
+from mailtrap.models.common import DeletedObject
 from mailtrap.models.projects import Project
 
 
@@ -9,7 +9,7 @@ class ProjectsApi:
         self.client = client
 
     def get_list(self) -> list[Project]:
-        response = self.client.list(f"/api/accounts/{self.account_id}/projects")
+        response = self.client.get(f"/api/accounts/{self.account_id}/projects")
         return [Project(**project) for project in response]
 
     def get_by_id(self, project_id: int) -> Project:

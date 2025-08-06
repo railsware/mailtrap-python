@@ -107,11 +107,12 @@ class MailtrapApiClient:
     def __init__(self, token: str) -> None:
         self.token = token
 
-    def testing_api(self, account_id: str, inbox_id: str) -> TestingApi:
-        http_client = HttpClient(host=GENERAL_ENDPOINT, headers=self.get_headers())
+    def testing_api(self, account_id: str, inbox_id: Optional[str] = None) -> TestingApi:
+        http_client = HttpClient(host=GENERAL_ENDPOINT, headers=self.headers)
         return TestingApi(account_id=account_id, inbox_id=inbox_id, client=http_client)
 
-    def get_headers(self) -> dict[str, str]:
+    @property
+    def headers(self) -> dict[str, str]:
         return {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",

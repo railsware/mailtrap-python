@@ -22,35 +22,7 @@ class HttpClient:
         self._session.headers.update(headers or {})
         self._timeout = timeout
 
-    def _url(self, path: str) -> str:
-        return f"https://{self._host}/{path.lstrip('/')}"
-
-    def _handle_failed_response(self, response: Response) -> NoReturn:
-        status_code = response.status_code
-        try:
-            data = response.json()
-        except ValueError as exc:
-            raise APIError(status_code, errors=["Unknown Error"]) from exc
-
-        errors = _extract_errors(data)
-
-        if status_code == 401:
-            raise AuthorizationError(errors=errors)
-
-        raise APIError(status_code, errors=errors)
-
-    def _process_response(self, response: Response) -> Any:
-        if not response.ok:
-            self._handle_failed_response(response)
-        return response.json()
-
     def get(self, path: str, params: Optional[dict[str, Any]] = None) -> Any:
-        response = self._session.get(
-            self._url(path), params=params, timeout=self._timeout
-        )
-        return self._process_response(response)
-
-    def list(self, path: str, params: Optional[dict[str, Any]] = None) -> Any:
         response = self._session.get(
             self._url(path), params=params, timeout=self._timeout
         )
@@ -72,27 +44,49 @@ class HttpClient:
         response = self._session.delete(self._url(path), timeout=self._timeout)
         return self._process_response(response)
 
+    def _url(self, path: str) -> str:
+        return f"https://{self._host}/{path.lstrip('/')}"
 
-def _extract_errors(data: dict[str, Any]) -> list[str]:
-    def flatten_errors(errors: Any) -> list[str]:
-        if isinstance(errors, list):
-            return [str(error) for error in errors]
+    def _process_response(self, response: Response) -> Any:
+        if not response.ok:
+            self._handle_failed_response(response)
+        return response.json()
 
-        if isinstance(errors, dict):
-            flat_errors = []
-            for key, value in errors.items():
-                if isinstance(value, list):
-                    flat_errors.extend([f"{key}: {v}" for v in value])
-                else:
-                    flat_errors.append(f"{key}: {value}")
-            return flat_errors
+    def _handle_failed_response(self, response: Response) -> NoReturn:
+        status_code = response.status_code
+        try:
+            data = response.json()
+        except ValueError as exc:
+            raise APIError(status_code, errors=["Unknown Error"]) from exc
 
-        return [str(errors)]
+        errors = self._extract_errors(data)
 
-    if "errors" in data:
-        return flatten_errors(data["errors"])
+        if status_code == 401:
+            raise AuthorizationError(errors=errors)
 
-    if "error" in data:
-        return flatten_errors(data["error"])
+        raise APIError(status_code, errors=errors)
 
-    return ["Unknown error"]
+    @staticmethod
+    def _extract_errors(data: dict[str, Any]) -> list[str]:
+        def flatten_errors(errors: Any) -> list[str]:
+            if isinstance(errors, list):
+                return [str(error) for error in errors]
+
+            if isinstance(errors, dict):
+                flat_errors = []
+                for key, value in errors.items():
+                    if isinstance(value, list):
+                        flat_errors.extend([f"{key}: {v}" for v in value])
+                    else:
+                        flat_errors.append(f"{key}: {value}")
+                return flat_errors
+
+            return [str(errors)]
+
+        if "errors" in data:
+            return flatten_errors(data["errors"])
+
+        if "error" in data:
+            return flatten_errors(data["error"])
+
+        return ["Unknown error"]

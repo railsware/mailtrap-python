@@ -7,8 +7,9 @@ from mailtrap.api.resources.projects import ProjectsApi
 from mailtrap.config import GENERAL_ENDPOINT
 from mailtrap.exceptions import APIError
 from mailtrap.http import HttpClient
-from mailtrap.models.base import DeletedObject
+from mailtrap.models.common import DeletedObject
 from mailtrap.models.projects import Project
+from tests import conftest
 
 ACCOUNT_ID = "321"
 PROJECT_ID = 123
@@ -44,8 +45,16 @@ class TestProjectsApi:
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
         [
-            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
-            (403, {"errors": "Access forbidden"}, "Access forbidden"),
+            (
+                conftest.UNAUTHORIZED_STATUS_CODE,
+                conftest.UNAUTHORIZED_RESPONSE,
+                conftest.UNAUTHORIZED_ERROR_MESSAGE,
+            ),
+            (
+                conftest.FORBIDDEN_STATUS_CODE,
+                conftest.FORBIDDEN_RESPONSE,
+                conftest.FORBIDDEN_ERROR_MESSAGE,
+            ),
         ],
     )
     @responses.activate
@@ -56,8 +65,7 @@ class TestProjectsApi:
         response_json: dict,
         expected_error_message: str,
     ) -> None:
-        responses.add(
-            responses.GET,
+        responses.get(
             BASE_PROJECTS_URL,
             status=status_code,
             json=response_json,
@@ -72,8 +80,7 @@ class TestProjectsApi:
     def test_get_list_should_return_project_list(
         self, client: ProjectsApi, sample_project_dict: dict
     ) -> None:
-        responses.add(
-            responses.GET,
+        responses.get(
             BASE_PROJECTS_URL,
             json=[sample_project_dict],
             status=200,
@@ -88,9 +95,21 @@ class TestProjectsApi:
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
         [
-            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
-            (403, {"errors": "Access forbidden"}, "Access forbidden"),
-            (404, {"error": "Not Found"}, "Not Found"),
+            (
+                conftest.UNAUTHORIZED_STATUS_CODE,
+                conftest.UNAUTHORIZED_RESPONSE,
+                conftest.UNAUTHORIZED_ERROR_MESSAGE,
+            ),
+            (
+                conftest.FORBIDDEN_STATUS_CODE,
+                conftest.FORBIDDEN_RESPONSE,
+                conftest.FORBIDDEN_ERROR_MESSAGE,
+            ),
+            (
+                conftest.NOT_FOUND_STATUS_CODE,
+                conftest.NOT_FOUND_RESPONSE,
+                conftest.NOT_FOUND_ERROR_MESSAGE,
+            ),
         ],
     )
     @responses.activate
@@ -102,8 +121,7 @@ class TestProjectsApi:
         expected_error_message: str,
     ) -> None:
         url = f"{BASE_PROJECTS_URL}/{PROJECT_ID}"
-        responses.add(
-            responses.GET,
+        responses.get(
             url,
             status=status_code,
             json=response_json,
@@ -119,8 +137,7 @@ class TestProjectsApi:
         self, client: ProjectsApi, sample_project_dict: dict
     ) -> None:
         url = f"{BASE_PROJECTS_URL}/{PROJECT_ID}"
-        responses.add(
-            responses.GET,
+        responses.get(
             url,
             json=sample_project_dict,
             status=200,
@@ -134,8 +151,16 @@ class TestProjectsApi:
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
         [
-            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
-            (403, {"errors": "Access forbidden"}, "Access forbidden"),
+            (
+                conftest.UNAUTHORIZED_STATUS_CODE,
+                conftest.UNAUTHORIZED_RESPONSE,
+                conftest.UNAUTHORIZED_ERROR_MESSAGE,
+            ),
+            (
+                conftest.FORBIDDEN_STATUS_CODE,
+                conftest.FORBIDDEN_RESPONSE,
+                conftest.FORBIDDEN_ERROR_MESSAGE,
+            ),
         ],
     )
     @responses.activate
@@ -146,8 +171,7 @@ class TestProjectsApi:
         response_json: dict,
         expected_error_message: str,
     ) -> None:
-        responses.add(
-            responses.POST,
+        responses.post(
             BASE_PROJECTS_URL,
             status=status_code,
             json=response_json,
@@ -162,8 +186,7 @@ class TestProjectsApi:
     def test_create_should_return_new_project(
         self, client: ProjectsApi, sample_project_dict: dict
     ) -> None:
-        responses.add(
-            responses.POST,
+        responses.post(
             BASE_PROJECTS_URL,
             json=sample_project_dict,
             status=201,
@@ -177,9 +200,21 @@ class TestProjectsApi:
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
         [
-            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
-            (403, {"errors": "Access forbidden"}, "Access forbidden"),
-            (404, {"error": "Not Found"}, "Not Found"),
+            (
+                conftest.UNAUTHORIZED_STATUS_CODE,
+                conftest.UNAUTHORIZED_RESPONSE,
+                conftest.UNAUTHORIZED_ERROR_MESSAGE,
+            ),
+            (
+                conftest.FORBIDDEN_STATUS_CODE,
+                conftest.FORBIDDEN_RESPONSE,
+                conftest.FORBIDDEN_ERROR_MESSAGE,
+            ),
+            (
+                conftest.NOT_FOUND_STATUS_CODE,
+                conftest.NOT_FOUND_RESPONSE,
+                conftest.NOT_FOUND_ERROR_MESSAGE,
+            ),
         ],
     )
     @responses.activate
@@ -191,8 +226,7 @@ class TestProjectsApi:
         expected_error_message: str,
     ) -> None:
         url = f"{BASE_PROJECTS_URL}/{PROJECT_ID}"
-        responses.add(
-            responses.PATCH,
+        responses.patch(
             url,
             status=status_code,
             json=response_json,
@@ -212,8 +246,7 @@ class TestProjectsApi:
         updated_project_dict = sample_project_dict.copy()
         updated_project_dict["name"] = updated_name
 
-        responses.add(
-            responses.PATCH,
+        responses.patch(
             url,
             json=updated_project_dict,
             status=200,
@@ -227,9 +260,21 @@ class TestProjectsApi:
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
         [
-            (401, {"error": "Incorrect API token"}, "Incorrect API token"),
-            (403, {"errors": "Access forbidden"}, "Access forbidden"),
-            (404, {"error": "Not Found"}, "Not Found"),
+            (
+                conftest.UNAUTHORIZED_STATUS_CODE,
+                conftest.UNAUTHORIZED_RESPONSE,
+                conftest.UNAUTHORIZED_ERROR_MESSAGE,
+            ),
+            (
+                conftest.FORBIDDEN_STATUS_CODE,
+                conftest.FORBIDDEN_RESPONSE,
+                conftest.FORBIDDEN_ERROR_MESSAGE,
+            ),
+            (
+                conftest.NOT_FOUND_STATUS_CODE,
+                conftest.NOT_FOUND_RESPONSE,
+                conftest.NOT_FOUND_ERROR_MESSAGE,
+            ),
         ],
     )
     @responses.activate
@@ -241,8 +286,7 @@ class TestProjectsApi:
         expected_error_message: str,
     ) -> None:
         url = f"{BASE_PROJECTS_URL}/{PROJECT_ID}"
-        responses.add(
-            responses.DELETE,
+        responses.delete(
             url,
             status=status_code,
             json=response_json,
@@ -256,8 +300,7 @@ class TestProjectsApi:
     @responses.activate
     def test_delete_should_return_deleted_object(self, client: ProjectsApi) -> None:
         url = f"{BASE_PROJECTS_URL}/{PROJECT_ID}"
-        responses.add(
-            responses.DELETE,
+        responses.delete(
             url,
             json={"id": PROJECT_ID},
             status=200,

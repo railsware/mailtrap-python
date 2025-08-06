@@ -152,7 +152,7 @@ class TestMailtrapApiClient:
     def test_headers_should_return_appropriate_dict(
         self, api_client: mt.MailtrapApiClient
     ) -> None:
-        assert api_client.get_headers() == {
+        assert api_client.headers == {
             "Authorization": "Bearer fake_token",
             "Content-Type": "application/json",
             "User-Agent": (
