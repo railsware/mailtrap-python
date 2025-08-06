@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from pydantic import Field
 
 from mailtrap.models.inboxes import Inbox
 from mailtrap.models.permissions import Permissions
