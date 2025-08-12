@@ -1,11 +1,12 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic.dataclasses import dataclass
 
 from mailtrap.models.permissions import Permissions
 
 
-class Inbox(BaseModel):
+@dataclass
+class Inbox:
     id: int
     name: str
     username: str

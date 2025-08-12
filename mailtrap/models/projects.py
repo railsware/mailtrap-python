@@ -1,17 +1,21 @@
-from pydantic import BaseModel
+from typing import Optional
+
+from pydantic.dataclasses import dataclass
 
 from mailtrap.models.inboxes import Inbox
 from mailtrap.models.permissions import Permissions
 
 
-class ShareLinks(BaseModel):
+@dataclass
+class ShareLinks:
     admin: str
     viewer: str
 
 
-class Project(BaseModel):
+@dataclass
+class Project:
     id: int
     name: str
-    share_links: ShareLinks
     inboxes: list[Inbox]
     permissions: Permissions
+    share_links: Optional[ShareLinks] = None

@@ -1,11 +1,12 @@
 from typing import NoReturn
 from typing import Optional
 from typing import Union
+from typing import cast
 
 import requests
 
 from mailtrap.api.testing import TestingApi
-from mailtrap.config import GENERAL_ENDPOINT
+from mailtrap.config import GENERAL_HOST
 from mailtrap.exceptions import APIError
 from mailtrap.exceptions import AuthorizationError
 from mailtrap.exceptions import ClientConfigurationError
@@ -26,6 +27,7 @@ class MailtrapClient:
         api_port: int = DEFAULT_PORT,
         bulk: bool = False,
         sandbox: bool = False,
+        account_id: Optional[str] = None,
         inbox_id: Optional[str] = None,
     ) -> None:
         self.token = token
@@ -33,9 +35,19 @@ class MailtrapClient:
         self.api_port = api_port
         self.bulk = bulk
         self.sandbox = sandbox
+        self.account_id = account_id
         self.inbox_id = inbox_id
 
         self._validate_itself()
+
+    @property
+    def testing_api(self) -> TestingApi:
+        self._validate_account_id()
+        return TestingApi(
+            account_id=cast(str, self.account_id),
+            inbox_id=self.inbox_id,
+            client=HttpClient(host=GENERAL_HOST, headers=self.headers),
+        )
 
     def send(self, mail: BaseMail) -> dict[str, Union[bool, list[str]]]:
         response = requests.post(
@@ -102,21 +114,6 @@ class MailtrapClient:
         if self.bulk and self.sandbox:
             raise ClientConfigurationError("bulk mode is not allowed in sandbox mode")
 
-
-class MailtrapApiClient:
-    def __init__(self, token: str) -> None:
-        self.token = token
-
-    def testing_api(self, account_id: str, inbox_id: Optional[str] = None) -> TestingApi:
-        http_client = HttpClient(host=GENERAL_ENDPOINT, headers=self.headers)
-        return TestingApi(account_id=account_id, inbox_id=inbox_id, client=http_client)
-
-    @property
-    def headers(self) -> dict[str, str]:
-        return {
-            "Authorization": f"Bearer {self.token}",
-            "Content-Type": "application/json",
-            "User-Agent": (
-                "mailtrap-python (https://github.com/railsware/mailtrap-python)"
-            ),
-        }
+    def _validate_account_id(self) -> None:
+        if not self.account_id:
+            raise ClientConfigurationError("`account_id` is required for Testing API")

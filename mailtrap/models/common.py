@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+from pydantic.dataclasses import dataclass
 
 
-class DeletedObject(BaseModel):
+@dataclass
+class DeletedObject:
     id: int

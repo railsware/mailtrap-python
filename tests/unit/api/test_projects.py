@@ -4,7 +4,7 @@ import pytest
 import responses
 
 from mailtrap.api.resources.projects import ProjectsApi
-from mailtrap.config import GENERAL_ENDPOINT
+from mailtrap.config import GENERAL_HOST
 from mailtrap.exceptions import APIError
 from mailtrap.http import HttpClient
 from mailtrap.models.common import DeletedObject
@@ -13,12 +13,12 @@ from tests import conftest
 
 ACCOUNT_ID = "321"
 PROJECT_ID = 123
-BASE_PROJECTS_URL = f"https://{GENERAL_ENDPOINT}/api/accounts/{ACCOUNT_ID}/projects"
+BASE_PROJECTS_URL = f"https://{GENERAL_HOST}/api/accounts/{ACCOUNT_ID}/projects"
 
 
 @pytest.fixture
 def client() -> ProjectsApi:
-    return ProjectsApi(account_id=ACCOUNT_ID, client=HttpClient(GENERAL_ENDPOINT))
+    return ProjectsApi(account_id=ACCOUNT_ID, client=HttpClient(GENERAL_HOST))
 
 
 @pytest.fixture

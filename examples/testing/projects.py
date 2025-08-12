@@ -1,12 +1,11 @@
-from mailtrap import MailtrapApiClient
+from mailtrap import MailtrapClient
 from mailtrap.models.projects import Project
 
 API_TOKEN = "YOU_API_TOKEN"
 ACCOUNT_ID = "YOU_ACCOUNT_ID"
 
-client = MailtrapApiClient(token=API_TOKEN)
-testing_api = client.testing_api(ACCOUNT_ID)
-projects_api = testing_api.projects
+client = MailtrapClient(token=API_TOKEN, account_id=ACCOUNT_ID)
+projects_api = client.testing_api.projects
 
 
 def list_projects() -> list[Project]:

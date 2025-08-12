@@ -42,6 +42,13 @@ class TestMailtrapClient:
         with pytest.raises(mt.ClientConfigurationError):
             self.get_client(**arguments)
 
+    def test_get_testing_api_validation(self) -> None:
+        client = self.get_client()
+        with pytest.raises(mt.ClientConfigurationError) as exc_info:
+            client.testing_api
+
+        assert "`account_id` is required for Testing API" in str(exc_info.value)
+
     def test_base_url_should_truncate_slash_from_host(self) -> None:
         client = self.get_client(api_host="example.send.com/", api_port=543)
 
@@ -142,20 +149,3 @@ class TestMailtrapClient:
 
         with pytest.raises(mt.APIError):
             client.send(mail)
-
-
-class TestMailtrapApiClient:
-    @pytest.fixture
-    def api_client(self):
-        return mt.MailtrapApiClient(token="fake_token")
-
-    def test_headers_should_return_appropriate_dict(
-        self, api_client: mt.MailtrapApiClient
-    ) -> None:
-        assert api_client.headers == {
-            "Authorization": "Bearer fake_token",
-            "Content-Type": "application/json",
-            "User-Agent": (
-                "mailtrap-python (https://github.com/railsware/mailtrap-python)"
-            ),
-        }

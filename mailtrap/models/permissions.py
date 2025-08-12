@@ -1,7 +1,8 @@
-from pydantic import BaseModel
+from pydantic.dataclasses import dataclass
 
 
-class Permissions(BaseModel):
+@dataclass
+class Permissions:
     can_read: bool
     can_update: bool
     can_destroy: bool
