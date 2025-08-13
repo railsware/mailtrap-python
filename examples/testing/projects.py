@@ -22,3 +22,8 @@ def update_project(project_id: str, new_name: str) -> Project:
 
 def delete_project(project_id: str):
     return projects_api.delete(project_id)
+
+
+if __name__ == "__main__":
+    projects = list_projects()
+    print(projects)

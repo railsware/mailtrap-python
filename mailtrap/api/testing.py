@@ -8,10 +8,10 @@ class TestingApi:
     def __init__(
         self, client: HttpClient, account_id: str, inbox_id: Optional[str] = None
     ) -> None:
-        self.account_id = account_id
-        self.inbox_id = inbox_id
-        self.client = client
+        self._account_id = account_id
+        self._inbox_id = inbox_id
+        self._client = client
 
     @property
     def projects(self) -> ProjectsApi:
-        return ProjectsApi(account_id=self.account_id, client=self.client)
+        return ProjectsApi(account_id=self._account_id, client=self._client)
