@@ -1,12 +1,16 @@
 from typing import NoReturn
 from typing import Optional
 from typing import Union
+from typing import cast
 
 import requests
 
+from mailtrap.api.testing import TestingApi
+from mailtrap.config import GENERAL_HOST
 from mailtrap.exceptions import APIError
 from mailtrap.exceptions import AuthorizationError
 from mailtrap.exceptions import ClientConfigurationError
+from mailtrap.http import HttpClient
 from mailtrap.mail.base import BaseMail
 
 
@@ -23,6 +27,7 @@ class MailtrapClient:
         api_port: int = DEFAULT_PORT,
         bulk: bool = False,
         sandbox: bool = False,
+        account_id: Optional[str] = None,
         inbox_id: Optional[str] = None,
     ) -> None:
         self.token = token
@@ -30,9 +35,19 @@ class MailtrapClient:
         self.api_port = api_port
         self.bulk = bulk
         self.sandbox = sandbox
+        self.account_id = account_id
         self.inbox_id = inbox_id
 
         self._validate_itself()
+
+    @property
+    def testing_api(self) -> TestingApi:
+        self._validate_account_id()
+        return TestingApi(
+            account_id=cast(str, self.account_id),
+            inbox_id=self.inbox_id,
+            client=HttpClient(host=GENERAL_HOST, headers=self.headers),
+        )
 
     def send(self, mail: BaseMail) -> dict[str, Union[bool, list[str]]]:
         response = requests.post(
@@ -98,3 +113,7 @@ class MailtrapClient:
 
         if self.bulk and self.sandbox:
             raise ClientConfigurationError("bulk mode is not allowed in sandbox mode")
+
+    def _validate_account_id(self) -> None:
+        if not self.account_id:
+            raise ClientConfigurationError("`account_id` is required for Testing API")

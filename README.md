@@ -7,17 +7,17 @@
 
 This Python package offers integration with the [official API](https://api-docs.mailtrap.io/) for [Mailtrap](https://mailtrap.io).
 
-Quickly add email sending functionality to your Python application with Mailtrap.
+Add email sending functionality to your Python application quickly with Mailtrap.
 
 ## Compatibility with previous releases
 
-Versions of this package up to 1.0.1 were a different, unrelated project, that is now maintained as [Sendria](https://github.com/msztolcman/sendria). To continue using it, see [instructions](#information-for-version-1-users).
+Versions of this package up to 1.0.1 were different, unrelated project, that is now maintained as [Sendria](https://github.com/msztolcman/sendria). To continue using it, see [instructions](#information-for-version-1-users).
 
 ## Installation
 
 ### Prerequisites
 
-- Python version 3.6+
+- Python version 3.9+
 
 ### Install package
 
@@ -150,7 +150,7 @@ To setup virtual environments, run tests and linters use:
 tox
 ```
 
-It will create virtual environments with all installed dependencies for each available python interpreter (starting from `python3.6`) on your machine.
+It will create virtual environments with all installed dependencies for each available python interpreter (starting from `python3.9`) on your machine.
 By default, they will be available in `{project}/.tox/` directory. So, for instance, to activate `python3.11` environment, run the following:
 
 ```bash

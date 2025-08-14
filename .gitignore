@@ -8,6 +8,9 @@ dist/
 # IntelliJ's project specific settings
 .idea/
 
+# VSCode's project specific settings
+.vscode/
+
 # mypy
 .mypy_cache/
 

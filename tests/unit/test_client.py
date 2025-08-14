@@ -42,6 +42,13 @@ class TestMailtrapClient:
         with pytest.raises(mt.ClientConfigurationError):
             self.get_client(**arguments)
 
+    def test_get_testing_api_validation(self) -> None:
+        client = self.get_client()
+        with pytest.raises(mt.ClientConfigurationError) as exc_info:
+            client.testing_api
+
+        assert "`account_id` is required for Testing API" in str(exc_info.value)
+
     def test_base_url_should_truncate_slash_from_host(self) -> None:
         client = self.get_client(api_host="example.send.com/", api_port=543)
 
