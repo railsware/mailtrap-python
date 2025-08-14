@@ -11,7 +11,7 @@ Quickly add email sending functionality to your Python application with Mailtrap
 
 ## Compatibility with previous releases
 
-Versions of this package up to 1.0.1 were a different, unrelated project, that is now maintained as [Sendria](https://github.com/msztolcman/sendria). To continue using it, see [instructions](#information-for-version-1-users).
+Versions of this package up to 1.0.1 were different, unrelated project, that is now maintained as [Sendria](https://github.com/msztolcman/sendria). To continue using it, see [instructions](#information-for-version-1-users).
 
 ## Installation
 
