@@ -7,7 +7,7 @@
 
 This Python package offers integration with the [official API](https://api-docs.mailtrap.io/) for [Mailtrap](https://mailtrap.io).
 
-Quickly add email sending functionality to your Python application with Mailtrap.
+Add email sending functionality to your Python application quickly with Mailtrap.
 
 ## Compatibility with previous releases
 
