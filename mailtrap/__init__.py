@@ -3,10 +3,9 @@ from .exceptions import APIError
 from .exceptions import AuthorizationError
 from .exceptions import ClientConfigurationError
 from .exceptions import MailtrapError
-from .mail import Address
-from .mail import Attachment
-from .mail import BaseEntity
-from .mail import BaseMail
-from .mail import Disposition
-from .mail import Mail
-from .mail import MailFromTemplate
+from .models.mail import Address
+from .models.mail import Attachment
+from .models.mail import BaseMail
+from .models.mail import Disposition
+from .models.mail import Mail
+from .models.mail import MailFromTemplate

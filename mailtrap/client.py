@@ -1,24 +1,21 @@
-from typing import NoReturn
+import warnings
 from typing import Optional
-from typing import Union
 from typing import cast
 
-import requests
-
+from mailtrap.api.sending import SEND_ENDPOINT_RESPONSE
+from mailtrap.api.sending import SendingApi
 from mailtrap.api.testing import TestingApi
+from mailtrap.config import BULK_HOST
 from mailtrap.config import GENERAL_HOST
-from mailtrap.exceptions import APIError
-from mailtrap.exceptions import AuthorizationError
+from mailtrap.config import SANDBOX_HOST
+from mailtrap.config import SENDING_HOST
 from mailtrap.exceptions import ClientConfigurationError
 from mailtrap.http import HttpClient
-from mailtrap.mail.base import BaseMail
+from mailtrap.models.mail import BaseMail
 
 
 class MailtrapClient:
-    DEFAULT_HOST = "send.api.mailtrap.io"
     DEFAULT_PORT = 443
-    BULK_HOST = "bulk.api.mailtrap.io"
-    SANDBOX_HOST = "sandbox.api.mailtrap.io"
 
     def __init__(
         self,
@@ -49,27 +46,30 @@ class MailtrapClient:
             client=HttpClient(host=GENERAL_HOST, headers=self.headers),
         )
 
-    def send(self, mail: BaseMail) -> dict[str, Union[bool, list[str]]]:
-        response = requests.post(
-            self.api_send_url, headers=self.headers, json=mail.api_data
+    @property
+    def sending_api(self) -> SendingApi:
+        return SendingApi(
+            api_url=self.api_send_url,
+            client=HttpClient(host=self._sending_api_host, headers=self.headers),
         )
 
-        if response.ok:
-            data: dict[str, Union[bool, list[str]]] = response.json()
-            return data
-
-        self._handle_failed_response(response)
+    def send(self, mail: BaseMail) -> SEND_ENDPOINT_RESPONSE:
+        return self.sending_api.send(mail)
 
     @property
     def base_url(self) -> str:
-        return f"https://{self._host.rstrip('/')}:{self.api_port}"
+        warnings.warn(
+            "base_url is deprecated and will be removed in a future release.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return f"https://{self._sending_api_host.rstrip('/')}:{self.api_port}"
 
     @property
     def api_send_url(self) -> str:
-        url = f"{self.base_url}/api/send"
+        url = "/api/send"
         if self.sandbox and self.inbox_id:
             return f"{url}/{self.inbox_id}"
-
         return url
 
     @property
@@ -83,24 +83,18 @@ class MailtrapClient:
         }
 
     @property
-    def _host(self) -> str:
+    def _sending_api_host(self) -> str:
         if self.api_host:
             return self.api_host
         if self.sandbox:
-            return self.SANDBOX_HOST
+            return SANDBOX_HOST
         if self.bulk:
-            return self.BULK_HOST
-        return self.DEFAULT_HOST
+            return BULK_HOST
+        return SENDING_HOST
 
-    @staticmethod
-    def _handle_failed_response(response: requests.Response) -> NoReturn:
-        status_code = response.status_code
-        data = response.json()
-
-        if status_code == 401:
-            raise AuthorizationError(data["errors"])
-
-        raise APIError(status_code, data["errors"])
+    def _validate_account_id(self) -> None:
+        if not self.account_id:
+            raise ClientConfigurationError("`account_id` is required for Testing API")
 
     def _validate_itself(self) -> None:
         if self.sandbox and not self.inbox_id:
@@ -113,7 +107,3 @@ class MailtrapClient:
 
         if self.bulk and self.sandbox:
             raise ClientConfigurationError("bulk mode is not allowed in sandbox mode")
-
-    def _validate_account_id(self) -> None:
-        if not self.account_id:
-            raise ClientConfigurationError("`account_id` is required for Testing API")
