@@ -32,7 +32,7 @@ mail_from_template = mt.MailFromTemplate(
 
 
 def send(client: mt.MailtrapClient, mail: mt.BaseMail) -> mt.SEND_ENDPOINT_RESPONSE:
-    client.send(mail)
+    return client.send(mail)
 
 
 def batch_send(client: mt.MailtrapClient, mail: mt.BaseMail) -> mt.SEND_ENDPOINT_RESPONSE:
@@ -41,4 +41,4 @@ def batch_send(client: mt.MailtrapClient, mail: mt.BaseMail) -> mt.SEND_ENDPOINT
 
 
 if __name__ == "__main__":
-    send(default_client, mail)
+    print(send(default_client, mail))
