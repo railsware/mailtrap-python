@@ -3,6 +3,8 @@ from typing import Optional
 from typing import cast
 
 from mailtrap.api.sending import SEND_ENDPOINT_RESPONSE
+from mailtrap.api.sending import DefaultSendingApi
+from mailtrap.api.sending import SandboxSendingApi
 from mailtrap.api.sending import SendingApi
 from mailtrap.api.testing import TestingApi
 from mailtrap.config import BULK_HOST
@@ -48,10 +50,12 @@ class MailtrapClient:
 
     @property
     def sending_api(self) -> SendingApi:
-        return SendingApi(
-            api_url=self.api_send_url,
-            client=HttpClient(host=self._sending_api_host, headers=self.headers),
-        )
+        http_client = HttpClient(host=self._sending_api_host, headers=self.headers)
+        if self.sandbox:
+            return SandboxSendingApi(
+                inbox_id=cast(str, self.inbox_id), client=http_client
+            )
+        return DefaultSendingApi(client=http_client)
 
     def send(self, mail: BaseMail) -> SEND_ENDPOINT_RESPONSE:
         return self.sending_api.send(mail)
@@ -67,7 +71,12 @@ class MailtrapClient:
 
     @property
     def api_send_url(self) -> str:
-        url = "/api/send"
+        warnings.warn(
+            "api_send_url is deprecated and will be removed in a future release.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        url = f"{self.base_url}/api/send"
         if self.sandbox and self.inbox_id:
             return f"{url}/{self.inbox_id}"
         return url

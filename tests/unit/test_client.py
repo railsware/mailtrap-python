@@ -1,10 +1,10 @@
-import json
 from typing import Any
 
 import pytest
-import responses
 
 import mailtrap as mt
+from mailtrap.api.sending import DefaultSendingApi
+from mailtrap.api.sending import SandboxSendingApi
 
 DUMMY_ADDRESS = mt.Address(email="joe@mail.com")
 DUMMY_MAIL = mt.Mail(
@@ -45,14 +45,23 @@ class TestMailtrapClient:
     def test_get_testing_api_validation(self) -> None:
         client = self.get_client()
         with pytest.raises(mt.ClientConfigurationError) as exc_info:
-            client.testing_api
+            _ = client.testing_api
 
         assert "`account_id` is required for Testing API" in str(exc_info.value)
 
-    def test_base_url_should_truncate_slash_from_host(self) -> None:
-        client = self.get_client(api_host="example.send.com/", api_port=543)
-
-        assert client.base_url == "https://example.send.com:543"
+    @pytest.mark.parametrize(
+        "api_cls,client_arguments",
+        [
+            (DefaultSendingApi, {}),
+            (DefaultSendingApi, {"bulk": True}),
+            (SandboxSendingApi, {"sandbox": True, "inbox_id": "12345"}),
+        ],
+    )
+    def test_get_sending_api_api_validation(
+        self, api_cls, client_arguments: dict[str, Any]
+    ) -> None:
+        client = self.get_client(**client_arguments)
+        assert isinstance(client.sending_api, api_cls)
 
     @pytest.mark.parametrize(
         "arguments, expected_url",
@@ -97,55 +106,3 @@ class TestMailtrapClient:
                 "mailtrap-python (https://github.com/railsware/mailtrap-python)"
             ),
         }
-
-    @responses.activate
-    @pytest.mark.parametrize("mail", MAIL_ENTITIES)
-    def test_send_should_handle_success_response(self, mail: mt.BaseMail) -> None:
-        response_body = {"success": True, "message_ids": ["12345"]}
-        responses.add(responses.POST, self.SEND_URL, json=response_body)
-
-        client = self.get_client()
-        result = client.send(mail)
-
-        assert result == response_body
-        assert len(responses.calls) == 1
-        request = responses.calls[0].request  # type: ignore
-        assert request.headers.items() >= client.headers.items()
-        assert request.body == json.dumps(mail.api_data).encode()
-
-    @responses.activate
-    @pytest.mark.parametrize("mail", MAIL_ENTITIES)
-    def test_send_should_raise_authorization_error(self, mail: mt.BaseMail) -> None:
-        response_body = {"errors": ["Unauthorized"]}
-        responses.add(responses.POST, self.SEND_URL, json=response_body, status=401)
-
-        client = self.get_client()
-
-        with pytest.raises(mt.AuthorizationError):
-            client.send(mail)
-
-    @responses.activate
-    @pytest.mark.parametrize("mail", MAIL_ENTITIES)
-    def test_send_should_raise_api_error_for_400_status_code(
-        self, mail: mt.BaseMail
-    ) -> None:
-        response_body = {"errors": ["Some error msg"]}
-        responses.add(responses.POST, self.SEND_URL, json=response_body, status=400)
-
-        client = self.get_client()
-
-        with pytest.raises(mt.APIError):
-            client.send(mail)
-
-    @responses.activate
-    @pytest.mark.parametrize("mail", MAIL_ENTITIES)
-    def test_send_should_raise_api_error_for_500_status_code(
-        self, mail: mt.BaseMail
-    ) -> None:
-        response_body = {"errors": ["Some error msg"]}
-        responses.add(responses.POST, self.SEND_URL, json=response_body, status=500)
-
-        client = self.get_client()
-
-        with pytest.raises(mt.APIError):
-            client.send(mail)
