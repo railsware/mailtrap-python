@@ -1,4 +1,4 @@
-from mailtrap.mail.address import Address
+from mailtrap.models.mail.address import Address
 
 
 class TestAddress:

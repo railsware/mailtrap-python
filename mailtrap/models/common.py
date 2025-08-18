@@ -13,7 +13,8 @@ class RequestModel:
     @property
     def api_data(self: T) -> dict[str, Any]:
         return cast(
-            dict[str, Any], TypeAdapter(type(self)).dump_python(self, by_alias=True)
+            dict[str, Any],
+            TypeAdapter(type(self)).dump_python(self, by_alias=True, exclude_none=True),
         )
 
 

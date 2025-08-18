@@ -1,6 +1,6 @@
-from mailtrap.mail.mail import Address
-from mailtrap.mail.mail import Attachment
-from mailtrap.mail.mail import Mail
+from mailtrap.models.mail import Address
+from mailtrap.models.mail import Attachment
+from mailtrap.models.mail import Mail
 
 
 class TestAttachment:
