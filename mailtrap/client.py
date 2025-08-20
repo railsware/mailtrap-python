@@ -1,10 +1,10 @@
 import warnings
 from typing import Optional
+from typing import Union
 from typing import cast
 
-from mailtrap.api.sending import SEND_ENDPOINT_RESPONSE
-from mailtrap.api.sending import DefaultSendingApi
-from mailtrap.api.sending import SandboxSendingApi
+from pydantic import TypeAdapter
+
 from mailtrap.api.sending import SendingApi
 from mailtrap.api.testing import TestingApi
 from mailtrap.config import BULK_HOST
@@ -14,6 +14,9 @@ from mailtrap.config import SENDING_HOST
 from mailtrap.exceptions import ClientConfigurationError
 from mailtrap.http import HttpClient
 from mailtrap.models.mail import BaseMail
+from mailtrap.models.mail.base import SendingMailResponse
+
+SEND_ENDPOINT_RESPONSE = dict[str, Union[bool, list[str]]]
 
 
 class MailtrapClient:
@@ -51,14 +54,14 @@ class MailtrapClient:
     @property
     def sending_api(self) -> SendingApi:
         http_client = HttpClient(host=self._sending_api_host, headers=self.headers)
-        if self.sandbox:
-            return SandboxSendingApi(
-                inbox_id=cast(str, self.inbox_id), client=http_client
-            )
-        return DefaultSendingApi(client=http_client)
+        return SendingApi(client=http_client, inbox_id=self.inbox_id)
 
     def send(self, mail: BaseMail) -> SEND_ENDPOINT_RESPONSE:
-        return self.sending_api.send(mail)
+        sending_response = self.sending_api.send(mail)
+        return cast(
+            SEND_ENDPOINT_RESPONSE,
+            TypeAdapter(SendingMailResponse).dump_python(sending_response),
+        )
 
     @property
     def base_url(self) -> str:

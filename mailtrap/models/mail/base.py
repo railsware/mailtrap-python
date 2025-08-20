@@ -18,3 +18,9 @@ class BaseMail(RequestModel):
     attachments: Optional[list[Attachment]] = None
     headers: Optional[dict[str, str]] = None
     custom_variables: Optional[dict[str, Any]] = None
+
+
+@dataclass
+class SendingMailResponse:
+    success: bool
+    message_ids: list[str]

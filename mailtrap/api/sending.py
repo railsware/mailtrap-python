@@ -1,34 +1,22 @@
-from typing import Protocol
-from typing import Union
-from typing import cast
+from typing import Optional
 
 from mailtrap.http import HttpClient
 from mailtrap.models.mail.base import BaseMail
-
-SEND_ENDPOINT_RESPONSE = dict[str, Union[bool, list[str]]]
-
-
-class SendingApi(Protocol):
-    def send(self, mail: BaseMail) -> SEND_ENDPOINT_RESPONSE: ...
+from mailtrap.models.mail.base import SendingMailResponse
 
 
-class DefaultSendingApi:
-    def __init__(self, client: HttpClient) -> None:
+class SendingApi:
+    def __init__(self, client: HttpClient, inbox_id: Optional[str] = None) -> None:
+        self._inbox_id = inbox_id
         self._client = client
 
-    def send(self, mail: BaseMail) -> SEND_ENDPOINT_RESPONSE:
-        return cast(
-            SEND_ENDPOINT_RESPONSE, self._client.post("/api/send", json=mail.api_data)
-        )
+    @property
+    def _api_url(self) -> str:
+        url = "/api/send"
+        if self._inbox_id:
+            return f"{url}/{self._inbox_id}"
+        return url
 
-
-class SandboxSendingApi:
-    def __init__(self, inbox_id: str, client: HttpClient) -> None:
-        self.inbox_id = inbox_id
-        self._client = client
-
-    def send(self, mail: BaseMail) -> SEND_ENDPOINT_RESPONSE:
-        return cast(
-            SEND_ENDPOINT_RESPONSE,
-            self._client.post(f"/api/send/{self.inbox_id}", json=mail.api_data),
-        )
+    def send(self, mail: BaseMail) -> SendingMailResponse:
+        response = self._client.post(self._api_url, json=mail.api_data)
+        return SendingMailResponse(**response)

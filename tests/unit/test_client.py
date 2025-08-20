@@ -3,8 +3,6 @@ from typing import Any
 import pytest
 
 import mailtrap as mt
-from mailtrap.api.sending import DefaultSendingApi
-from mailtrap.api.sending import SandboxSendingApi
 
 DUMMY_ADDRESS = mt.Address(email="joe@mail.com")
 DUMMY_MAIL = mt.Mail(
@@ -48,20 +46,6 @@ class TestMailtrapClient:
             _ = client.testing_api
 
         assert "`account_id` is required for Testing API" in str(exc_info.value)
-
-    @pytest.mark.parametrize(
-        "api_cls,client_arguments",
-        [
-            (DefaultSendingApi, {}),
-            (DefaultSendingApi, {"bulk": True}),
-            (SandboxSendingApi, {"sandbox": True, "inbox_id": "12345"}),
-        ],
-    )
-    def test_get_sending_api_api_validation(
-        self, api_cls, client_arguments: dict[str, Any]
-    ) -> None:
-        client = self.get_client(**client_arguments)
-        assert isinstance(client.sending_api, api_cls)
 
     @pytest.mark.parametrize(
         "arguments, expected_url",

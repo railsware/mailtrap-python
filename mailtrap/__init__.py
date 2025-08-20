@@ -1,4 +1,4 @@
-from .api.sending import SEND_ENDPOINT_RESPONSE
+from .client import SEND_ENDPOINT_RESPONSE
 from .client import MailtrapClient
 from .exceptions import APIError
 from .exceptions import AuthorizationError
