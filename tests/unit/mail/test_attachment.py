@@ -1,5 +1,5 @@
-from mailtrap.mail.attachment import Attachment
-from mailtrap.mail.attachment import Disposition
+from mailtrap.models.mail.attachment import Attachment
+from mailtrap.models.mail.attachment import Disposition
 
 
 class TestAttachment:
