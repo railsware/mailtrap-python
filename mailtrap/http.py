@@ -50,6 +50,10 @@ class HttpClient:
     def _process_response(self, response: Response) -> Any:
         if not response.ok:
             self._handle_failed_response(response)
+
+        if not response.content.strip():
+            return None
+
         return response.json()
 
     def _handle_failed_response(self, response: Response) -> NoReturn:

@@ -2,10 +2,10 @@ from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
-from mailtrap.models.common import RequestModel
+from mailtrap.models.common import ParametersObject
 
 
 @dataclass
-class Address(RequestModel):
+class Address(ParametersObject):
     email: str
     name: Optional[str] = None
