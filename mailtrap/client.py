@@ -20,7 +20,10 @@ SEND_ENDPOINT_RESPONSE = dict[str, Union[bool, list[str]]]
 
 
 class MailtrapClient:
+    DEFAULT_HOST = SENDING_HOST
     DEFAULT_PORT = 443
+    BULK_HOST = BULK_HOST
+    SANDBOX_HOST = SANDBOX_HOST
 
     def __init__(
         self,
