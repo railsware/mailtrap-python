@@ -4,6 +4,9 @@ from .exceptions import APIError
 from .exceptions import AuthorizationError
 from .exceptions import ClientConfigurationError
 from .exceptions import MailtrapError
+from .models.contacts import ContactField
+from .models.contacts import CreateContactFieldParams
+from .models.contacts import UpdateContactFieldParams
 from .models.mail import Address
 from .models.mail import Attachment
 from .models.mail import BaseMail
