@@ -2,11 +2,11 @@ from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
-from mailtrap.models.common import ParametersObject
+from mailtrap.models.common import RequestParams
 
 
 @dataclass
-class CreateEmailTemplateParams(ParametersObject):
+class CreateEmailTemplateParams(RequestParams):
     name: str
     subject: str
     category: str
@@ -15,7 +15,7 @@ class CreateEmailTemplateParams(ParametersObject):
 
 
 @dataclass
-class UpdateEmailTemplateParams(ParametersObject):
+class UpdateEmailTemplateParams(RequestParams):
     name: Optional[str] = None
     subject: Optional[str] = None
     category: Optional[str] = None
