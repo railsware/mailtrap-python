@@ -1,3 +1,5 @@
+from typing import Optional
+
 from mailtrap.http import HttpClient
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.contacts import ContactField
@@ -11,18 +13,18 @@ class ContactFieldsApi:
         self._client = client
 
     def get_list(self) -> list[ContactField]:
-        response = self._client.get(f"/api/accounts/{self._account_id}/contacts/fields")
+        response = self._client.get(self._api_path())
         return [ContactField(**field) for field in response]
 
     def get_by_id(self, field_id: int) -> ContactField:
         response = self._client.get(
-            f"/api/accounts/{self._account_id}/contacts/fields/{field_id}"
+            self._api_path(field_id),
         )
         return ContactField(**response)
 
     def create(self, field_params: CreateContactFieldParams) -> ContactField:
         response = self._client.post(
-            f"/api/accounts/{self._account_id}/contacts/fields",
+            self._api_path(),
             json=field_params.api_data,
         )
         return ContactField(**response)
@@ -31,13 +33,17 @@ class ContactFieldsApi:
         self, field_id: int, field_params: UpdateContactFieldParams
     ) -> ContactField:
         response = self._client.patch(
-            f"/api/accounts/{self._account_id}/contacts/fields/{field_id}",
+            self._api_path(field_id),
             json=field_params.api_data,
         )
         return ContactField(**response)
 
     def delete(self, field_id: int) -> DeletedObject:
-        self._client.delete(
-            f"/api/accounts/{self._account_id}/contacts/fields/{field_id}"
-        )
+        self._client.delete(self._api_path(field_id))
         return DeletedObject(field_id)
+
+    def _api_path(self, field_id: Optional[int] = None) -> str:
+        path = f"/api/accounts/{self._account_id}/contacts/fields"
+        if field_id:
+            return f"{path}/{field_id}"
+        return path

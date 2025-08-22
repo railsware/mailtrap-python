@@ -25,7 +25,7 @@ def create_contact_field(
 
 
 def update_contact_field(
-    contact_field_id: str,
+    contact_field_id: int,
     name: Optional[str] = None,
     merge_tag: Optional[str] = None,
 ) -> ContactField:
@@ -37,11 +37,11 @@ def list_contact_fields() -> list[ContactField]:
     return contact_fields_api.get_list()
 
 
-def get_contact_field(contact_field_id: str) -> ContactField:
+def get_contact_field(contact_field_id: int) -> ContactField:
     return contact_fields_api.get_by_id(contact_field_id)
 
 
-def delete_contact_field(contact_field_id: str) -> DeletedObject:
+def delete_contact_field(contact_field_id: int) -> DeletedObject:
     return contact_fields_api.delete(contact_field_id)
 
 
