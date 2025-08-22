@@ -5,11 +5,11 @@ from typing import cast
 from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass
 
-T = TypeVar("T", bound="RequestModel")
+T = TypeVar("T", bound="RequestParams")
 
 
 @dataclass
-class RequestModel:
+class RequestParams:
     @property
     def api_data(self: T) -> dict[str, Any]:
         return cast(

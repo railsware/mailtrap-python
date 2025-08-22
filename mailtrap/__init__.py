@@ -10,3 +10,5 @@ from .models.mail import BaseMail
 from .models.mail import Disposition
 from .models.mail import Mail
 from .models.mail import MailFromTemplate
+from .models.templates import CreateEmailTemplateParams
+from .models.templates import UpdateEmailTemplateParams

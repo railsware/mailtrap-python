@@ -6,7 +6,7 @@ from pydantic import FieldSerializationInfo
 from pydantic import field_serializer
 from pydantic.dataclasses import dataclass
 
-from mailtrap.models.common import RequestModel
+from mailtrap.models.common import RequestParams
 
 
 class Disposition(str, Enum):
@@ -15,7 +15,7 @@ class Disposition(str, Enum):
 
 
 @dataclass
-class Attachment(RequestModel):
+class Attachment(RequestParams):
     content: bytes
     filename: str
     disposition: Optional[Disposition] = None

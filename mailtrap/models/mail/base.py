@@ -4,13 +4,13 @@ from typing import Optional
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
-from mailtrap.models.common import RequestModel
+from mailtrap.models.common import RequestParams
 from mailtrap.models.mail.address import Address
 from mailtrap.models.mail.attachment import Attachment
 
 
 @dataclass
-class BaseMail(RequestModel):
+class BaseMail(RequestParams):
     sender: Address = Field(..., serialization_alias="from")
     to: list[Address] = Field(...)
     cc: Optional[list[Address]] = None

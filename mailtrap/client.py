@@ -6,6 +6,7 @@ from typing import cast
 from pydantic import TypeAdapter
 
 from mailtrap.api.sending import SendingApi
+from mailtrap.api.templates import EmailTemplatesApi
 from mailtrap.api.testing import TestingApi
 from mailtrap.config import BULK_HOST
 from mailtrap.config import GENERAL_HOST
@@ -51,6 +52,14 @@ class MailtrapClient:
         return TestingApi(
             account_id=cast(str, self.account_id),
             inbox_id=self.inbox_id,
+            client=HttpClient(host=GENERAL_HOST, headers=self.headers),
+        )
+
+    @property
+    def email_templates_api(self) -> EmailTemplatesApi:
+        self._validate_account_id()
+        return EmailTemplatesApi(
+            account_id=cast(str, self.account_id),
             client=HttpClient(host=GENERAL_HOST, headers=self.headers),
         )
 
