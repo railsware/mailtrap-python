@@ -1,3 +1,5 @@
+from typing import Optional
+
 from mailtrap.http import HttpClient
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.templates import CreateEmailTemplateParams
@@ -11,18 +13,16 @@ class TemplatesApi:
         self._client = client
 
     def get_list(self) -> list[EmailTemplate]:
-        response = self._client.get(f"/api/accounts/{self._account_id}/email_templates")
+        response = self._client.get(self._api_path())
         return [EmailTemplate(**template) for template in response]
 
     def get_by_id(self, template_id: int) -> EmailTemplate:
-        response = self._client.get(
-            f"/api/accounts/{self._account_id}/email_templates/{template_id}"
-        )
+        response = self._client.get(self._api_path(template_id))
         return EmailTemplate(**response)
 
     def create(self, template_params: CreateEmailTemplateParams) -> EmailTemplate:
         response = self._client.post(
-            f"/api/accounts/{self._account_id}/email_templates",
+            self._api_path(),
             json={"email_template": template_params.api_data},
         )
         return EmailTemplate(**response)
@@ -31,13 +31,17 @@ class TemplatesApi:
         self, template_id: int, template_params: UpdateEmailTemplateParams
     ) -> EmailTemplate:
         response = self._client.patch(
-            f"/api/accounts/{self._account_id}/email_templates/{template_id}",
+            self._api_path(template_id),
             json={"email_template": template_params.api_data},
         )
         return EmailTemplate(**response)
 
     def delete(self, template_id: int) -> DeletedObject:
-        self._client.delete(
-            f"/api/accounts/{self._account_id}/email_templates/{template_id}"
-        )
+        self._client.delete(self._api_path(template_id))
         return DeletedObject(template_id)
+
+    def _api_path(self, template_id: Optional[int] = None) -> str:
+        path = f"/api/accounts/{self._account_id}/email_templates"
+        if template_id:
+            return f"{path}/{template_id}"
+        return path

@@ -5,6 +5,7 @@ from typing import cast
 
 from pydantic import TypeAdapter
 
+from mailtrap.api.contacts import ContactsBaseApi
 from mailtrap.api.sending import SendingApi
 from mailtrap.api.templates import EmailTemplatesApi
 from mailtrap.api.testing import TestingApi
@@ -59,6 +60,14 @@ class MailtrapClient:
     def email_templates_api(self) -> EmailTemplatesApi:
         self._validate_account_id()
         return EmailTemplatesApi(
+            account_id=cast(str, self.account_id),
+            client=HttpClient(host=GENERAL_HOST, headers=self.headers),
+        )
+
+    @property
+    def contacts_api(self) -> ContactsBaseApi:
+        self._validate_account_id()
+        return ContactsBaseApi(
             account_id=cast(str, self.account_id),
             client=HttpClient(host=GENERAL_HOST, headers=self.headers),
         )
