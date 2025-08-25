@@ -1,5 +1,6 @@
 import pytest
 
+from mailtrap.models.contacts import ContactListParams
 from mailtrap.models.contacts import CreateContactFieldParams
 from mailtrap.models.contacts import UpdateContactFieldParams
 
@@ -50,3 +51,12 @@ class TestUpdateContactFieldParams:
         api_data = params.api_data
 
         assert api_data == {"name": "Updated Field", "merge_tag": "updated_field"}
+
+
+class TestContactListParams:
+    def test_create_contact_field_params_api_data_should_return_correct_dict(
+        self,
+    ) -> None:
+        params = ContactListParams(name="Test List")
+        api_data = params.api_data
+        assert api_data == {"name": "Test List"}

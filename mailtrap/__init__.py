@@ -5,6 +5,7 @@ from .exceptions import AuthorizationError
 from .exceptions import ClientConfigurationError
 from .exceptions import MailtrapError
 from .models.contacts import ContactField
+from .models.contacts import ContactListParams
 from .models.contacts import CreateContactFieldParams
 from .models.contacts import UpdateContactFieldParams
 from .models.mail import Address

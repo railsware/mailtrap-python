@@ -28,3 +28,14 @@ class ContactField:
     name: str
     data_type: str
     merge_tag: str
+
+
+@dataclass
+class ContactListParams(RequestParams):
+    name: str
+
+
+@dataclass
+class ContactList:
+    id: int
+    name: str
