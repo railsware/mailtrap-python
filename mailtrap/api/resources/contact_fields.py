@@ -44,6 +44,6 @@ class ContactFieldsApi:
 
     def _api_path(self, field_id: Optional[int] = None) -> str:
         path = f"/api/accounts/{self._account_id}/contacts/fields"
-        if field_id:
+        if field_id is not None:
             return f"{path}/{field_id}"
         return path

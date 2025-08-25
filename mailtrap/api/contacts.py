@@ -1,4 +1,5 @@
 from mailtrap.api.resources.contact_fields import ContactFieldsApi
+from mailtrap.api.resources.contact_lists import ContactListsApi
 from mailtrap.http import HttpClient
 
 
@@ -10,3 +11,7 @@ class ContactsBaseApi:
     @property
     def contact_fields(self) -> ContactFieldsApi:
         return ContactFieldsApi(account_id=self._account_id, client=self._client)
+
+    @property
+    def contact_lists(self) -> ContactListsApi:
+        return ContactListsApi(account_id=self._account_id, client=self._client)
