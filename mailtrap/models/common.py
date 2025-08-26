@@ -1,5 +1,6 @@
 from typing import Any
 from typing import TypeVar
+from typing import Union
 from typing import cast
 
 from pydantic import TypeAdapter
@@ -20,4 +21,4 @@ class RequestParams:
 
 @dataclass
 class DeletedObject:
-    id: int
+    id: Union[int, str]

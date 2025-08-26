@@ -3,108 +3,60 @@ from typing import Any
 import pytest
 import responses
 
-from mailtrap.api.resources.contact_lists import ContactListsApi
+from mailtrap.api.resources.contacts import ContactsApi
 from mailtrap.config import GENERAL_HOST
 from mailtrap.exceptions import APIError
 from mailtrap.http import HttpClient
 from mailtrap.models.common import DeletedObject
-from mailtrap.models.contacts import ContactList
-from mailtrap.models.contacts import ContactListParams
+from mailtrap.models.contacts import Contact
+from mailtrap.models.contacts import ContactStatus
+from mailtrap.models.contacts import CreateContactParams
+from mailtrap.models.contacts import UpdateContactParams
 from tests import conftest
 
 ACCOUNT_ID = "321"
-LIST_ID = 1234
-BASE_CONTACT_LISTS_URL = (
-    f"https://{GENERAL_HOST}/api/accounts/{ACCOUNT_ID}/contacts/lists"
-)
+CONTACT_ID = "018dd5e3-f6d2-7c00-8f9b-e5c3f2d8a132"
+BASE_CONTACTS_URL = f"https://{GENERAL_HOST}/api/accounts/{ACCOUNT_ID}/contacts"
 
 
 @pytest.fixture
-def contact_lists_api() -> ContactListsApi:
-    return ContactListsApi(account_id=ACCOUNT_ID, client=HttpClient(GENERAL_HOST))
+def contacts_api() -> ContactsApi:
+    return ContactsApi(account_id=ACCOUNT_ID, client=HttpClient(GENERAL_HOST))
 
 
 @pytest.fixture
-def sample_contact_list_dict() -> dict[str, Any]:
+def sample_contact_dict() -> dict[str, Any]:
     return {
-        "id": LIST_ID,
-        "name": "My Contact List",
+        "data": {
+            "id": CONTACT_ID,
+            "status": "subscribed",
+            "email": "john.smith@example.com",
+            "fields": {"first_name": "John", "last_name": "Smith"},
+            "list_ids": [1, 2, 3],
+            "created_at": 1742820600230,
+            "updated_at": 1742820600230,
+        }
     }
 
 
 @pytest.fixture
-def create_contact_list_params() -> ContactListParams:
-    return ContactListParams(name="My Contact List")
+def create_contact_params() -> CreateContactParams:
+    return CreateContactParams(
+        email="john.smith@example.com",
+        fields={"first_name": "John", "last_name": "Smith"},
+        list_ids=[1, 2, 3],
+    )
 
 
 @pytest.fixture
-def update_contact_list_params() -> ContactListParams:
-    return ContactListParams(name="Updated Contact List")
-
-
-class TestContactListsApi:
-
-    @pytest.mark.parametrize(
-        "status_code,response_json,expected_error_message",
-        [
-            (
-                conftest.UNAUTHORIZED_STATUS_CODE,
-                conftest.UNAUTHORIZED_RESPONSE,
-                conftest.UNAUTHORIZED_ERROR_MESSAGE,
-            ),
-            (
-                conftest.FORBIDDEN_STATUS_CODE,
-                conftest.FORBIDDEN_RESPONSE,
-                conftest.FORBIDDEN_ERROR_MESSAGE,
-            ),
-            (
-                conftest.RATE_LIMIT_ERROR_STATUS_CODE,
-                conftest.RATE_LIMIT_ERROR_RESPONSE,
-                conftest.RATE_LIMIT_ERROR_MESSAGE,
-            ),
-            (
-                conftest.INTERNAL_SERVER_ERROR_STATUS_CODE,
-                conftest.INTERNAL_SERVER_ERROR_RESPONSE,
-                conftest.INTERNAL_SERVER_ERROR_MESSAGE,
-            ),
-        ],
+def update_contact_params() -> UpdateContactParams:
+    return UpdateContactParams(
+        email="john.updated@example.com",
+        fields={"first_name": "John Updated", "last_name": "Smith Updated"},
     )
-    @responses.activate
-    def test_get_contact_lists_should_raise_api_errors(
-        self,
-        contact_lists_api: ContactListsApi,
-        status_code: int,
-        response_json: dict,
-        expected_error_message: str,
-    ) -> None:
-        responses.get(
-            BASE_CONTACT_LISTS_URL,
-            status=status_code,
-            json=response_json,
-        )
 
-        with pytest.raises(APIError) as exc_info:
-            contact_lists_api.get_list()
 
-        assert expected_error_message in str(exc_info.value)
-
-    @responses.activate
-    def test_get_contact_lists_should_return_contact_list_list(
-        self, contact_lists_api: ContactListsApi, sample_contact_list_dict: dict
-    ) -> None:
-        responses.get(
-            BASE_CONTACT_LISTS_URL,
-            json=[sample_contact_list_dict],
-            status=200,
-        )
-
-        contact_lists = contact_lists_api.get_list()
-
-        assert isinstance(contact_lists, list)
-        assert all(
-            isinstance(contact_list, ContactList) for contact_list in contact_lists
-        )
-        assert contact_lists[0].id == LIST_ID
+class TestContactstApi:
 
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
@@ -137,39 +89,43 @@ class TestContactListsApi:
         ],
     )
     @responses.activate
-    def test_get_contact_list_should_raise_api_errors(
+    def test_get_contact_should_raise_api_errors(
         self,
-        contact_lists_api: ContactListsApi,
+        contacts_api: ContactsApi,
         status_code: int,
         response_json: dict,
         expected_error_message: str,
     ) -> None:
         responses.get(
-            f"{BASE_CONTACT_LISTS_URL}/{LIST_ID}",
+            f"{BASE_CONTACTS_URL}/{CONTACT_ID}",
             status=status_code,
             json=response_json,
         )
 
         with pytest.raises(APIError) as exc_info:
-            contact_lists_api.get_by_id(LIST_ID)
+            contacts_api.get_by_id(CONTACT_ID)
 
         assert expected_error_message in str(exc_info.value)
 
     @responses.activate
-    def test_get_contact_list_should_return_contact_list(
-        self, contact_lists_api: ContactListsApi, sample_contact_list_dict: dict
+    def test_get_contact_should_return_contact(
+        self, contacts_api: ContactsApi, sample_contact_dict: dict
     ) -> None:
         responses.get(
-            f"{BASE_CONTACT_LISTS_URL}/{LIST_ID}",
-            json=sample_contact_list_dict,
+            f"{BASE_CONTACTS_URL}/{CONTACT_ID}",
+            json=sample_contact_dict,
             status=200,
         )
 
-        contact_list = contact_lists_api.get_by_id(LIST_ID)
+        contact = contacts_api.get_by_id(CONTACT_ID)
 
-        assert isinstance(contact_list, ContactList)
-        assert contact_list.id == LIST_ID
-        assert contact_list.name == "My Contact List"
+        assert isinstance(contact, Contact)
+        assert contact.id == CONTACT_ID
+        assert contact.email == "john.smith@example.com"
+        assert contact.status == ContactStatus.SUBSCRIBED
+        assert contact.fields["first_name"] == "John"
+        assert contact.fields["last_name"] == "Smith"
+        assert contact.list_ids == [1, 2, 3]
 
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
@@ -194,49 +150,70 @@ class TestContactListsApi:
                 conftest.INTERNAL_SERVER_ERROR_RESPONSE,
                 conftest.INTERNAL_SERVER_ERROR_MESSAGE,
             ),
+            (
+                409,
+                {"errors": "Contact exists"},
+                "Contact exists",
+            ),
+            (
+                422,
+                {"errors": {"email": ["Email is invalid"]}},
+                "Email is invalid",
+            ),
         ],
     )
     @responses.activate
-    def test_create_contact_list_should_raise_api_errors(
+    def test_create_contact_should_raise_api_errors(
         self,
-        contact_lists_api: ContactListsApi,
-        create_contact_list_params: ContactListParams,
+        contacts_api: ContactsApi,
+        create_contact_params: CreateContactParams,
         status_code: int,
         response_json: dict,
         expected_error_message: str,
     ) -> None:
         responses.post(
-            BASE_CONTACT_LISTS_URL,
+            BASE_CONTACTS_URL,
             status=status_code,
             json=response_json,
         )
 
         with pytest.raises(APIError) as exc_info:
-            contact_lists_api.create(create_contact_list_params)
+            contacts_api.create(create_contact_params)
 
         assert expected_error_message in str(exc_info.value)
 
     @responses.activate
-    def test_create_contact_list_should_return_created_contact_list(
+    def test_create_contact_should_return_created_contact(
         self,
-        contact_lists_api: ContactListsApi,
-        create_contact_list_params: ContactListParams,
+        contacts_api: ContactsApi,
+        create_contact_params: CreateContactParams,
     ) -> None:
         expected_response = {
-            "id": LIST_ID,
-            "name": "My Contact List",
+            "data": {
+                "id": CONTACT_ID,
+                "status": "subscribed",
+                "email": "john.smith@example.com",
+                "fields": {"first_name": "John", "last_name": "Smith"},
+                "list_ids": [1, 2, 3],
+                "created_at": 1742820600230,
+                "updated_at": 1742820600230,
+            }
         }
         responses.post(
-            BASE_CONTACT_LISTS_URL,
+            BASE_CONTACTS_URL,
             json=expected_response,
             status=201,
         )
 
-        contact_list = contact_lists_api.create(create_contact_list_params)
+        contact = contacts_api.create(create_contact_params)
 
-        assert isinstance(contact_list, ContactList)
-        assert contact_list.id == LIST_ID
-        assert contact_list.name == "My Contact List"
+        assert isinstance(contact, Contact)
+        assert contact.id == CONTACT_ID
+        assert contact.email == "john.smith@example.com"
+        assert contact.status == ContactStatus.SUBSCRIBED
+        assert contact.fields["first_name"] == "John"
+        assert contact.fields["last_name"] == "Smith"
+        assert contact.list_ids == [1, 2, 3]
 
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
@@ -252,11 +229,6 @@ class TestContactListsApi:
                 conftest.FORBIDDEN_ERROR_MESSAGE,
             ),
             (
-                conftest.NOT_FOUND_STATUS_CODE,
-                conftest.NOT_FOUND_RESPONSE,
-                conftest.NOT_FOUND_ERROR_MESSAGE,
-            ),
-            (
                 conftest.RATE_LIMIT_ERROR_STATUS_CODE,
                 conftest.RATE_LIMIT_ERROR_RESPONSE,
                 conftest.RATE_LIMIT_ERROR_MESSAGE,
@@ -266,49 +238,68 @@ class TestContactListsApi:
                 conftest.INTERNAL_SERVER_ERROR_RESPONSE,
                 conftest.INTERNAL_SERVER_ERROR_MESSAGE,
             ),
+            (
+                409,
+                {"errors": "Contact exists"},
+                "Contact exists",
+            ),
+            (
+                conftest.VALIDATION_ERRORS_STATUS_CODE,
+                {"errors": {"email": [["is invalid"]], "birthdate": [["is invalid"]]}},
+                "email: ['is invalid']; birthdate: ['is invalid']",
+            ),
         ],
     )
     @responses.activate
-    def test_update_contact_list_should_raise_api_errors(
+    def test_update_contact_should_raise_api_errors(
         self,
-        contact_lists_api: ContactListsApi,
-        update_contact_list_params: ContactListParams,
+        contacts_api: ContactsApi,
+        update_contact_params: UpdateContactParams,
         status_code: int,
         response_json: dict,
         expected_error_message: str,
     ) -> None:
         responses.patch(
-            f"{BASE_CONTACT_LISTS_URL}/{LIST_ID}",
+            f"{BASE_CONTACTS_URL}/{CONTACT_ID}",
             status=status_code,
             json=response_json,
         )
 
         with pytest.raises(APIError) as exc_info:
-            contact_lists_api.update(LIST_ID, update_contact_list_params)
-
+            contacts_api.update(CONTACT_ID, update_contact_params)
         assert expected_error_message in str(exc_info.value)
 
     @responses.activate
-    def test_update_contact_list_should_return_updated_contact_list(
+    def test_update_contact_should_return_updated_contact(
         self,
-        contact_lists_api: ContactListsApi,
-        update_contact_list_params: ContactListParams,
+        contacts_api: ContactsApi,
+        update_contact_params: UpdateContactParams,
     ) -> None:
         expected_response = {
-            "id": LIST_ID,
-            "name": "Updated Contact List",
+            "data": {
+                "id": CONTACT_ID,
+                "status": "subscribed",
+                "email": "john.updated@example.com",
+                "fields": {"first_name": "John Updated", "last_name": "Smith Updated"},
+                "list_ids": [1, 2, 3],
+                "created_at": 1742820600230,
+                "updated_at": 1742820600230,
+            }
         }
         responses.patch(
-            f"{BASE_CONTACT_LISTS_URL}/{LIST_ID}",
+            f"{BASE_CONTACTS_URL}/{CONTACT_ID}",
             json=expected_response,
             status=200,
         )
 
-        contact_list = contact_lists_api.update(LIST_ID, update_contact_list_params)
+        contact = contacts_api.update(CONTACT_ID, update_contact_params)
 
-        assert isinstance(contact_list, ContactList)
-        assert contact_list.id == LIST_ID
-        assert contact_list.name == "Updated Contact List"
+        assert isinstance(contact, Contact)
+        assert contact.id == CONTACT_ID
+        assert contact.email == "john.updated@example.com"
+        assert contact.status == ContactStatus.SUBSCRIBED
+        assert contact.fields["first_name"] == "John Updated"
+        assert contact.fields["last_name"] == "Smith Updated"
 
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
@@ -341,34 +332,34 @@ class TestContactListsApi:
         ],
     )
     @responses.activate
-    def test_delete_contact_list_should_raise_api_errors(
+    def test_delete_contact_should_raise_api_errors(
         self,
-        contact_lists_api: ContactListsApi,
+        contacts_api: ContactsApi,
         status_code: int,
         response_json: dict,
         expected_error_message: str,
     ) -> None:
         responses.delete(
-            f"{BASE_CONTACT_LISTS_URL}/{LIST_ID}",
+            f"{BASE_CONTACTS_URL}/{CONTACT_ID}",
             status=status_code,
             json=response_json,
         )
 
         with pytest.raises(APIError) as exc_info:
-            contact_lists_api.delete(LIST_ID)
+            contacts_api.delete(CONTACT_ID)
 
         assert expected_error_message in str(exc_info.value)
 
     @responses.activate
-    def test_delete_contact_list_should_return_deleted_object(
-        self, contact_lists_api: ContactListsApi
+    def test_delete_contact_should_return_deleted_object(
+        self, contacts_api: ContactsApi
     ) -> None:
         responses.delete(
-            f"{BASE_CONTACT_LISTS_URL}/{LIST_ID}",
+            f"{BASE_CONTACTS_URL}/{CONTACT_ID}",
             status=204,
         )
 
-        deleted_object = contact_lists_api.delete(LIST_ID)
+        deleted_object = contacts_api.delete(CONTACT_ID)
 
         assert isinstance(deleted_object, DeletedObject)
-        assert deleted_object.id == LIST_ID
+        assert deleted_object.id == CONTACT_ID

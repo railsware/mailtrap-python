@@ -1,4 +1,6 @@
+from enum import Enum
 from typing import Optional
+from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -39,3 +41,57 @@ class ContactListParams(RequestParams):
 class ContactList:
     id: int
     name: str
+
+
+class ContactStatus(str, Enum):
+    SUBSCRIBED = "subscribed"
+    UNSUBSCRIBED = "unsubscribed"
+
+
+@dataclass
+class CreateContactParams(RequestParams):
+    email: str
+    fields: Optional[dict[str, Union[str, int, float, bool, str]]] = (
+        None  # field_merge_tag: value
+    )
+    list_ids: Optional[list[int]] = None
+
+
+@dataclass
+class UpdateContactParams(RequestParams):
+    email: Optional[str] = None
+    fields: Optional[dict[str, Union[str, int, float, bool, str]]] = (
+        None  # field_merge_tag: value
+    )
+    list_ids_included: Optional[list[int]] = None
+    list_ids_excluded: Optional[list[int]] = None
+    unsubscribed: Optional[bool] = None
+
+    def __post_init__(self) -> None:
+        if all(
+            value is None
+            for value in [
+                self.email,
+                self.fields,
+                self.list_ids_included,
+                self.list_ids_excluded,
+                self.unsubscribed,
+            ]
+        ):
+            raise ValueError("At least one field must be provided for update action")
+
+
+@dataclass
+class Contact:
+    id: str
+    email: str
+    fields: dict[str, Union[str, int, float, bool, str]]  # field_merge_tag: value
+    list_ids: list[int]
+    status: ContactStatus
+    created_at: int
+    updated_at: int
+
+
+@dataclass
+class ContactResponse:
+    data: Contact
