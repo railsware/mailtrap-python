@@ -14,7 +14,7 @@ contacts_api = client.contacts_api.contacts
 
 def create_contact(
     email: str,
-    fields: Optional[dict[str, Union[str, int, float, bool, str]]] = None,
+    fields: Optional[dict[str, Union[str, int, float, bool]]] = None,
     list_ids: Optional[list[int]] = None,
 ) -> Contact:
     params = mt.CreateContactParams(
@@ -28,7 +28,7 @@ def create_contact(
 def update_contact(
     contact_id_or_email: str,
     new_email: Optional[str] = None,
-    fields: Optional[dict[str, Union[str, int, float, bool, str]]] = None,
+    fields: Optional[dict[str, Union[str, int, float, bool]]] = None,
     list_ids_included: Optional[list[int]] = None,
     list_ids_excluded: Optional[list[int]] = None,
     unsubscribed: Optional[bool] = None,

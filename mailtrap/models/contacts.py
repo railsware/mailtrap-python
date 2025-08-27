@@ -51,7 +51,7 @@ class ContactStatus(str, Enum):
 @dataclass
 class CreateContactParams(RequestParams):
     email: str
-    fields: Optional[dict[str, Union[str, int, float, bool, str]]] = (
+    fields: Optional[dict[str, Union[str, int, float, bool]]] = (
         None  # field_merge_tag: value
     )
     list_ids: Optional[list[int]] = None
@@ -60,7 +60,7 @@ class CreateContactParams(RequestParams):
 @dataclass
 class UpdateContactParams(RequestParams):
     email: Optional[str] = None
-    fields: Optional[dict[str, Union[str, int, float, bool, str]]] = (
+    fields: Optional[dict[str, Union[str, int, float, bool]]] = (
         None  # field_merge_tag: value
     )
     list_ids_included: Optional[list[int]] = None
@@ -85,7 +85,7 @@ class UpdateContactParams(RequestParams):
 class Contact:
     id: str
     email: str
-    fields: dict[str, Union[str, int, float, bool, str]]  # field_merge_tag: value
+    fields: dict[str, Union[str, int, float, bool]]  # field_merge_tag: value
     list_ids: list[int]
     status: ContactStatus
     created_at: int
