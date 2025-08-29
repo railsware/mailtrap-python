@@ -7,6 +7,7 @@ from .exceptions import MailtrapError
 from .models.contacts import ContactListParams
 from .models.contacts import CreateContactFieldParams
 from .models.contacts import CreateContactParams
+from .models.contacts import ImportContactParams
 from .models.contacts import UpdateContactFieldParams
 from .models.contacts import UpdateContactParams
 from .models.mail import Address

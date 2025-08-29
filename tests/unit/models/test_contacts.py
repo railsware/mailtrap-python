@@ -3,6 +3,7 @@ import pytest
 from mailtrap.models.contacts import ContactListParams
 from mailtrap.models.contacts import CreateContactFieldParams
 from mailtrap.models.contacts import CreateContactParams
+from mailtrap.models.contacts import ImportContactParams
 from mailtrap.models.contacts import UpdateContactFieldParams
 from mailtrap.models.contacts import UpdateContactParams
 
@@ -119,4 +120,30 @@ class TestUpdateContactParams:
             "list_ids_included": [2],
             "list_ids_excluded": [1],
             "unsubscribed": False,
+        }
+
+
+class TestImportContactParams:
+    def test_import_contact_params_api_data_should_exclude_none_values(
+        self,
+    ) -> None:
+        params = ImportContactParams(email="test@test.com")
+        api_data = params.api_data
+        assert api_data == {"email": "test@test.com"}
+
+    def test_import_contact_params_api_data_should_return_correct_dicts(
+        self,
+    ) -> None:
+        params = ImportContactParams(
+            email="test@test.com",
+            fields={"first_name": "Test"},
+            list_ids_included=[1],
+            list_ids_excluded=[2],
+        )
+        api_data = params.api_data
+        assert api_data == {
+            "email": "test@test.com",
+            "fields": {"first_name": "Test"},
+            "list_ids_included": [1],
+            "list_ids_excluded": [2],
         }
