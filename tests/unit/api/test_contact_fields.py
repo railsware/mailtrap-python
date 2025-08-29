@@ -18,6 +18,18 @@ FIELD_ID = 6730
 BASE_CONTACT_FIELDS_URL = (
     f"https://{GENERAL_HOST}/api/accounts/{ACCOUNT_ID}/contacts/fields"
 )
+VALIDATION_ERRORS_RESPONSE = {
+    "errors": {
+        "name": [["is too long (maximum is 80 characters)", "has already been taken"]],
+        "merge_tag": [
+            ["is too long (maximum is 80 characters)", "has already been taken"]
+        ],
+    }
+}
+VALIDATION_ERRORS_MESSAGE = (
+    "name: ['is too long (maximum is 80 characters)', 'has already been taken']; "
+    "merge_tag: ['is too long (maximum is 80 characters)', 'has already been taken']"
+)
 
 
 @pytest.fixture
@@ -61,6 +73,16 @@ class TestContactsApi:
                 conftest.FORBIDDEN_STATUS_CODE,
                 conftest.FORBIDDEN_RESPONSE,
                 conftest.FORBIDDEN_ERROR_MESSAGE,
+            ),
+            (
+                conftest.RATE_LIMIT_ERROR_STATUS_CODE,
+                conftest.RATE_LIMIT_ERROR_RESPONSE,
+                conftest.RATE_LIMIT_ERROR_MESSAGE,
+            ),
+            (
+                conftest.INTERNAL_SERVER_ERROR_STATUS_CODE,
+                conftest.INTERNAL_SERVER_ERROR_RESPONSE,
+                conftest.INTERNAL_SERVER_ERROR_MESSAGE,
             ),
         ],
     )
@@ -117,6 +139,16 @@ class TestContactsApi:
                 conftest.NOT_FOUND_RESPONSE,
                 conftest.NOT_FOUND_ERROR_MESSAGE,
             ),
+            (
+                conftest.RATE_LIMIT_ERROR_STATUS_CODE,
+                conftest.RATE_LIMIT_ERROR_RESPONSE,
+                conftest.RATE_LIMIT_ERROR_MESSAGE,
+            ),
+            (
+                conftest.INTERNAL_SERVER_ERROR_STATUS_CODE,
+                conftest.INTERNAL_SERVER_ERROR_RESPONSE,
+                conftest.INTERNAL_SERVER_ERROR_MESSAGE,
+            ),
         ],
     )
     @responses.activate
@@ -168,6 +200,21 @@ class TestContactsApi:
                 conftest.FORBIDDEN_STATUS_CODE,
                 conftest.FORBIDDEN_RESPONSE,
                 conftest.FORBIDDEN_ERROR_MESSAGE,
+            ),
+            (
+                conftest.RATE_LIMIT_ERROR_STATUS_CODE,
+                conftest.RATE_LIMIT_ERROR_RESPONSE,
+                conftest.RATE_LIMIT_ERROR_MESSAGE,
+            ),
+            (
+                conftest.INTERNAL_SERVER_ERROR_STATUS_CODE,
+                conftest.INTERNAL_SERVER_ERROR_RESPONSE,
+                conftest.INTERNAL_SERVER_ERROR_MESSAGE,
+            ),
+            (
+                conftest.VALIDATION_ERRORS_STATUS_CODE,
+                VALIDATION_ERRORS_RESPONSE,
+                VALIDATION_ERRORS_MESSAGE,
             ),
         ],
     )
@@ -235,6 +282,21 @@ class TestContactsApi:
                 conftest.NOT_FOUND_RESPONSE,
                 conftest.NOT_FOUND_ERROR_MESSAGE,
             ),
+            (
+                conftest.RATE_LIMIT_ERROR_STATUS_CODE,
+                conftest.RATE_LIMIT_ERROR_RESPONSE,
+                conftest.RATE_LIMIT_ERROR_MESSAGE,
+            ),
+            (
+                conftest.INTERNAL_SERVER_ERROR_STATUS_CODE,
+                conftest.INTERNAL_SERVER_ERROR_RESPONSE,
+                conftest.INTERNAL_SERVER_ERROR_MESSAGE,
+            ),
+            (
+                conftest.VALIDATION_ERRORS_STATUS_CODE,
+                VALIDATION_ERRORS_RESPONSE,
+                VALIDATION_ERRORS_MESSAGE,
+            ),
         ],
     )
     @responses.activate
@@ -300,6 +362,39 @@ class TestContactsApi:
                 conftest.NOT_FOUND_STATUS_CODE,
                 conftest.NOT_FOUND_RESPONSE,
                 conftest.NOT_FOUND_ERROR_MESSAGE,
+            ),
+            (
+                conftest.RATE_LIMIT_ERROR_STATUS_CODE,
+                conftest.RATE_LIMIT_ERROR_RESPONSE,
+                conftest.RATE_LIMIT_ERROR_MESSAGE,
+            ),
+            (
+                conftest.INTERNAL_SERVER_ERROR_STATUS_CODE,
+                conftest.INTERNAL_SERVER_ERROR_RESPONSE,
+                conftest.INTERNAL_SERVER_ERROR_MESSAGE,
+            ),
+            (
+                conftest.VALIDATION_ERRORS_STATUS_CODE,
+                {
+                    "errors": {
+                        "usage": [
+                            (
+                                "This field is used in the steps of automation(s): "
+                                "%{automation names}."
+                            ),
+                            (
+                                "This field is used in the conditions of segment(s): "
+                                "{segment names}."
+                            ),
+                        ]
+                    }
+                },
+                (
+                    "usage: This field is used in the steps of automation(s): "
+                    "%{automation names}.; "
+                    "usage: This field is used in the conditions of segment(s): "
+                    "{segment names}."
+                ),
             ),
         ],
     )
