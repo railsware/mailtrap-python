@@ -121,8 +121,3 @@ class ImportContactParams(RequestParams):
     )
     list_ids_included: Optional[list[int]] = None
     list_ids_excluded: Optional[list[int]] = None
-
-
-@dataclass
-class ContactImportRequest(RequestParams):
-    contacts: list[CreateContactParams]
