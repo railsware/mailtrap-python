@@ -95,3 +95,29 @@ class Contact:
 @dataclass
 class ContactResponse:
     data: Contact
+
+
+class ContactImportStatus(str, Enum):
+    CREATED = "created"
+    STARTED = "started"
+    FINISHED = "finished"
+    FAILED = "failed"
+
+
+@dataclass
+class ContactImport:
+    id: int
+    status: ContactImportStatus
+    created_contacts_count: Optional[int] = None
+    updated_contacts_count: Optional[int] = None
+    contacts_over_limit_count: Optional[int] = None
+
+
+@dataclass
+class ImportContactParams(RequestParams):
+    email: str
+    fields: Optional[dict[str, Union[str, int, float, bool]]] = (
+        None  # field_merge_tag: value
+    )
+    list_ids_included: Optional[list[int]] = None
+    list_ids_excluded: Optional[list[int]] = None
