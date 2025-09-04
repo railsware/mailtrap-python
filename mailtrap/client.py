@@ -7,6 +7,7 @@ from pydantic import TypeAdapter
 
 from mailtrap.api.contacts import ContactsBaseApi
 from mailtrap.api.sending import SendingApi
+from mailtrap.api.suppressions import SuppressionsBaseApi
 from mailtrap.api.templates import EmailTemplatesApi
 from mailtrap.api.testing import TestingApi
 from mailtrap.config import BULK_HOST
@@ -68,6 +69,14 @@ class MailtrapClient:
     def contacts_api(self) -> ContactsBaseApi:
         self._validate_account_id()
         return ContactsBaseApi(
+            account_id=cast(str, self.account_id),
+            client=HttpClient(host=GENERAL_HOST, headers=self.headers),
+        )
+
+    @property
+    def suppressions_api(self) -> SuppressionsBaseApi:
+        self._validate_account_id()
+        return SuppressionsBaseApi(
             account_id=cast(str, self.account_id),
             client=HttpClient(host=GENERAL_HOST, headers=self.headers),
         )
