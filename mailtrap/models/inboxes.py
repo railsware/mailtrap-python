@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
+from mailtrap.models.common import RequestParams
 from mailtrap.models.permissions import Permissions
 
 
@@ -22,6 +23,7 @@ class Inbox:
     domain: str
     pop3_domain: str
     email_domain: str
+    api_domain: str
     emails_count: int
     emails_unread_count: int
     smtp_ports: list[int]
@@ -32,3 +34,24 @@ class Inbox:
         None  # Password is only available if you have admin permissions for the inbox.
     )
     last_message_sent_at: Optional[str] = None
+
+
+@dataclass
+class CreateInboxParams(RequestParams):
+    name: str
+
+
+@dataclass
+class UpdateInboxParams(RequestParams):
+    name: Optional[str] = None
+    email_username: Optional[str] = None
+
+    def __post_init__(self) -> None:
+        if all(
+            value is None
+            for value in [
+                self.name,
+                self.email_username,
+            ]
+        ):
+            raise ValueError("At least one field must be provided for update action")
