@@ -13,16 +13,19 @@ class ContactFieldsApi:
         self._client = client
 
     def get_list(self) -> list[ContactField]:
+        """Get all Contact Fields existing in your account."""
         response = self._client.get(self._api_path())
         return [ContactField(**field) for field in response]
 
     def get_by_id(self, field_id: int) -> ContactField:
+        """Get a contact Field by ID."""
         response = self._client.get(
             self._api_path(field_id),
         )
         return ContactField(**response)
 
     def create(self, field_params: CreateContactFieldParams) -> ContactField:
+        """Create new Contact Fields. Please note, you can have up to 40 fields."""
         response = self._client.post(
             self._api_path(),
             json=field_params.api_data,
@@ -32,6 +35,10 @@ class ContactFieldsApi:
     def update(
         self, field_id: int, field_params: UpdateContactFieldParams
     ) -> ContactField:
+        """
+        Update existing Contact Field. Please note,
+        you cannot change data_type of the field.
+        """
         response = self._client.patch(
             self._api_path(field_id),
             json=field_params.api_data,
@@ -39,6 +46,11 @@ class ContactFieldsApi:
         return ContactField(**response)
 
     def delete(self, field_id: int) -> DeletedObject:
+        """
+        Delete existing Contact Field Please, note, you cannot delete a Contact Field
+        which is used in Automations, Email Campaigns (started or scheduled), and in
+        conditions of Contact Segments (you'll see the corresponding error)
+        """
         self._client.delete(self._api_path(field_id))
         return DeletedObject(field_id)
 

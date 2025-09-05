@@ -3,6 +3,7 @@ from typing import Optional
 from mailtrap.http import HttpClient
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.projects import Project
+from mailtrap.models.projects import ProjectParams
 
 
 class ProjectsApi:
@@ -11,28 +12,39 @@ class ProjectsApi:
         self._client = client
 
     def get_list(self) -> list[Project]:
+        """List projects and their inboxes to which the API token has access."""
         response = self._client.get(self._api_path())
         return [Project(**project) for project in response]
 
     def get_by_id(self, project_id: int) -> Project:
+        """Get the project and its inboxes."""
         response = self._client.get(self._api_path(project_id))
         return Project(**response)
 
-    def create(self, project_name: str) -> Project:
+    def create(self, project_params: ProjectParams) -> Project:
+        """
+        Create a new project.
+        The project name is min 2 characters and max 100 characters long.
+        """
         response = self._client.post(
             self._api_path(),
-            json={"project": {"name": project_name}},
+            json={"project": project_params.api_data},
         )
         return Project(**response)
 
-    def update(self, project_id: int, project_name: str) -> Project:
+    def update(self, project_id: int, project_params: ProjectParams) -> Project:
+        """
+        Update project name.
+        The project name is min 2 characters and max 100 characters long.
+        """
         response = self._client.patch(
             self._api_path(project_id),
-            json={"project": {"name": project_name}},
+            json={"project": project_params.api_data},
         )
         return Project(**response)
 
     def delete(self, project_id: int) -> DeletedObject:
+        """Delete project and its inboxes."""
         response = self._client.delete(self._api_path(project_id))
         return DeletedObject(**response)
 

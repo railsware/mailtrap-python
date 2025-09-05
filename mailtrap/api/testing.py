@@ -1,5 +1,6 @@
 from typing import Optional
 
+from mailtrap.api.resources.inboxes import InboxesApi
 from mailtrap.api.resources.projects import ProjectsApi
 from mailtrap.http import HttpClient
 
@@ -15,3 +16,7 @@ class TestingApi:
     @property
     def projects(self) -> ProjectsApi:
         return ProjectsApi(account_id=self._account_id, client=self._client)
+
+    @property
+    def inboxes(self) -> InboxesApi:
+        return InboxesApi(account_id=self._account_id, client=self._client)

@@ -9,6 +9,7 @@ from mailtrap.exceptions import APIError
 from mailtrap.http import HttpClient
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.projects import Project
+from mailtrap.models.projects import ProjectParams
 from tests import conftest
 
 ACCOUNT_ID = "321"
@@ -178,7 +179,7 @@ class TestProjectsApi:
         )
 
         with pytest.raises(APIError) as exc_info:
-            client.create(project_name="New Project")
+            client.create(project_params=ProjectParams(name="New Project"))
 
         assert expected_error_message in str(exc_info.value)
 
@@ -192,7 +193,7 @@ class TestProjectsApi:
             status=201,
         )
 
-        project = client.create(project_name="New Project")
+        project = client.create(project_params=ProjectParams(name="New Project"))
 
         assert isinstance(project, Project)
         assert project.name == "Test Project"
@@ -233,7 +234,9 @@ class TestProjectsApi:
         )
 
         with pytest.raises(APIError) as exc_info:
-            client.update(PROJECT_ID, project_name="Update Project Name")
+            _ = client.update(
+                PROJECT_ID, project_params=ProjectParams(name="Update Project Namet")
+            )
 
         assert expected_error_message in str(exc_info.value)
 
@@ -252,7 +255,9 @@ class TestProjectsApi:
             status=200,
         )
 
-        project = client.update(PROJECT_ID, project_name=updated_name)
+        project = client.update(
+            PROJECT_ID, project_params=ProjectParams(name=updated_name)
+        )
 
         assert isinstance(project, Project)
         assert project.name == updated_name

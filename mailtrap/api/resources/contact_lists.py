@@ -12,14 +12,17 @@ class ContactListsApi:
         self._client = client
 
     def get_list(self) -> list[ContactList]:
+        """Get all contact lists existing in your account."""
         response = self._client.get(self._api_path())
         return [ContactList(**field) for field in response]
 
     def get_by_id(self, list_id: int) -> ContactList:
+        """Get a contact list by ID."""
         response = self._client.get(self._api_path(list_id))
         return ContactList(**response)
 
     def create(self, list_params: ContactListParams) -> ContactList:
+        """Create new Contact Lists."""
         response = self._client.post(
             self._api_path(),
             json=list_params.api_data,
@@ -27,6 +30,7 @@ class ContactListsApi:
         return ContactList(**response)
 
     def update(self, list_id: int, list_params: ContactListParams) -> ContactList:
+        """Update existing Contact List."""
         response = self._client.patch(
             self._api_path(list_id),
             json=list_params.api_data,
@@ -34,6 +38,7 @@ class ContactListsApi:
         return ContactList(**response)
 
     def delete(self, list_id: int) -> DeletedObject:
+        """Delete existing Contact List."""
         self._client.delete(self._api_path(list_id))
         return DeletedObject(list_id)
 

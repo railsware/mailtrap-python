@@ -11,6 +11,12 @@ class ContactImportsApi:
         self._client = client
 
     def import_contacts(self, contacts: list[ImportContactParams]) -> ContactImport:
+        """
+        Import contacts in bulk with support for custom fields and list management.
+        Existing contacts with matching email addresses will be updated automatically.
+        You can import up to 50,000 contacts per request. The import process runs
+        asynchronously - use the returned import ID to check the status and results.
+        """
         response = self._client.post(
             self._api_path(),
             json={"contacts": [contact.api_data for contact in contacts]},
@@ -18,6 +24,7 @@ class ContactImportsApi:
         return ContactImport(**response)
 
     def get_by_id(self, import_id: int) -> ContactImport:
+        """Get Contact Import by ID."""
         response = self._client.get(self._api_path(import_id))
         return ContactImport(**response)
 

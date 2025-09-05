@@ -1,5 +1,4 @@
 import pytest
-from pydantic import ValidationError
 
 from mailtrap.models.templates import CreateEmailTemplateParams
 from mailtrap.models.templates import UpdateEmailTemplateParams
@@ -33,7 +32,7 @@ class TestCreateEmailTemplateParams:
 
 class TestUpdateEmailTemplateParams:
     def test_raise_error_when_all_fields_are_missing(self) -> None:
-        with pytest.raises(ValidationError) as exc:
+        with pytest.raises(ValueError) as exc:
             _ = UpdateEmailTemplateParams()
 
         assert "At least one field must be provided for update actio" in str(exc)
