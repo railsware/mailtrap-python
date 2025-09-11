@@ -18,5 +18,6 @@ class SendingApi:
         return url
 
     def send(self, mail: BaseMail) -> SendingMailResponse:
+        """Send email (text, html, text&html, templates)."""
         response = self._client.post(self._api_url, json=mail.api_data)
         return SendingMailResponse(**response)

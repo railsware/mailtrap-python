@@ -15,10 +15,12 @@ class ContactsApi:
         self._client = client
 
     def get_by_id(self, contact_id_or_email: str) -> Contact:
+        """Get contact using id or email (URL encoded)."""
         response = self._client.get(self._api_path(contact_id_or_email))
         return ContactResponse(**response).data
 
     def create(self, contact_params: CreateContactParams) -> Contact:
+        """Create a new contact."""
         response = self._client.post(
             self._api_path(),
             json={"contact": contact_params.api_data},
@@ -28,6 +30,7 @@ class ContactsApi:
     def update(
         self, contact_id_or_email: str, contact_params: UpdateContactParams
     ) -> Contact:
+        """Update contact using id or email (URL encoded)."""
         response = self._client.patch(
             self._api_path(contact_id_or_email),
             json={"contact": contact_params.api_data},
@@ -35,6 +38,7 @@ class ContactsApi:
         return ContactResponse(**response).data
 
     def delete(self, contact_id_or_email: str) -> DeletedObject:
+        """Delete contact using id or email (URL encoded)."""
         self._client.delete(self._api_path(contact_id_or_email))
         return DeletedObject(contact_id_or_email)
 

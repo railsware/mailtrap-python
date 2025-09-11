@@ -10,11 +10,14 @@ from .models.contacts import CreateContactParams
 from .models.contacts import ImportContactParams
 from .models.contacts import UpdateContactFieldParams
 from .models.contacts import UpdateContactParams
+from .models.inboxes import CreateInboxParams
+from .models.inboxes import UpdateInboxParams
 from .models.mail import Address
 from .models.mail import Attachment
 from .models.mail import BaseMail
 from .models.mail import Disposition
 from .models.mail import Mail
 from .models.mail import MailFromTemplate
+from .models.projects import ProjectParams
 from .models.templates import CreateEmailTemplateParams
 from .models.templates import UpdateEmailTemplateParams
