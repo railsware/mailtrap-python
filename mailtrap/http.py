@@ -1,8 +1,8 @@
+from json import JSONDecodeError
 from typing import Any
 from typing import NoReturn
 from typing import Optional
 
-from requests import JSONDecodeError
 from requests import Response
 from requests import Session
 
