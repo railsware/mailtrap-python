@@ -1,3 +1,4 @@
+from json import JSONDecodeError
 from typing import Any
 from typing import NoReturn
 from typing import Optional
@@ -54,14 +55,23 @@ class HttpClient:
         if not response.content.strip():
             return None
 
-        return response.json()
+        try:
+            return response.json()
+        except (JSONDecodeError, ValueError):
+            return response.text
 
     def _handle_failed_response(self, response: Response) -> NoReturn:
         status_code = response.status_code
+
+        if not response.content:
+            if status_code == 404:
+                raise APIError(status_code, errors=["Not Found"])
+            raise APIError(status_code, errors=["Empty response body"])
+
         try:
             data = response.json()
-        except ValueError as exc:
-            raise APIError(status_code, errors=["Unknown Error"]) from exc
+        except (JSONDecodeError, ValueError) as exc:
+            raise APIError(status_code, errors=["Invalid JSON"]) from exc
 
         errors = self._extract_errors(data)
 
