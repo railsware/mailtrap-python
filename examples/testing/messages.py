@@ -53,24 +53,24 @@ def get_html_analysis(inbox_id: int, message_id: str) -> AnalysisReport:
     return messages_api.get_html_analysis(inbox_id=inbox_id, message_id=message_id)
 
 
-def get_text_body(inbox_id: int, message_id: str) -> str:
-    return messages_api.get_text_body(inbox_id=inbox_id, message_id=message_id)
+def get_text_message(inbox_id: int, message_id: str) -> str:
+    return messages_api.get_text_message(inbox_id=inbox_id, message_id=message_id)
 
 
-def get_raw_body(inbox_id: int, message_id: str) -> str:
-    return messages_api.get_raw_body(inbox_id=inbox_id, message_id=message_id)
+def get_raw_message(inbox_id: int, message_id: str) -> str:
+    return messages_api.get_raw_message(inbox_id=inbox_id, message_id=message_id)
 
 
 def get_html_source(inbox_id: int, message_id: str) -> str:
     return messages_api.get_html_source(inbox_id=inbox_id, message_id=message_id)
 
 
-def get_html_body(inbox_id: int, message_id: str) -> str:
-    return messages_api.get_html_body(inbox_id=inbox_id, message_id=message_id)
+def get_html_message(inbox_id: int, message_id: str) -> str:
+    return messages_api.get_html_message(inbox_id=inbox_id, message_id=message_id)
 
 
-def get_eml_body(inbox_id: int, message_id: str) -> str:
-    return messages_api.get_eml_body(inbox_id=inbox_id, message_id=message_id)
+def get_message_as_eml(inbox_id: int, message_id: str) -> str:
+    return messages_api.get_message_as_eml(inbox_id=inbox_id, message_id=message_id)
 
 
 def get_mail_headers(inbox_id: int, message_id: str) -> str:
