@@ -1,8 +1,8 @@
 import mailtrap as mt
 from mailtrap.models.contacts import ContactImport
 
-API_TOKEN = "YOU_API_TOKEN"
-ACCOUNT_ID = "YOU_ACCOUNT_ID"
+API_TOKEN = "YOUR_API_TOKEN"
+ACCOUNT_ID = "YOUR_ACCOUNT_ID"
 
 client = mt.MailtrapClient(token=API_TOKEN, account_id=ACCOUNT_ID)
 contact_imports_api = client.contacts_api.contact_imports

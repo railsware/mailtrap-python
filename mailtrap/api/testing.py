@@ -1,5 +1,6 @@
 from typing import Optional
 
+from mailtrap.api.resources.attachments import AttachmentsApi
 from mailtrap.api.resources.inboxes import InboxesApi
 from mailtrap.api.resources.messages import MessagesApi
 from mailtrap.api.resources.projects import ProjectsApi
@@ -25,3 +26,7 @@ class TestingApi:
     @property
     def messages(self) -> MessagesApi:
         return MessagesApi(account_id=self._account_id, client=self._client)
+
+    @property
+    def attachments(self) -> AttachmentsApi:
+        return AttachmentsApi(account_id=self._account_id, client=self._client)
