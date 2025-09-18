@@ -1,3 +1,17 @@
+## [2.2.0] - 2025-09-18
+- Potential fix for code scanning alert no. 1: Workflow does not contain permissions by @mklocek in https://github.com/railsware/mailtrap-python/pull/15
+- Fix issue #29. Add support of Emails Sandbox (Testing) API: Projects by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/31
+- Issue 25 by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/33
+- Fix issue #18: Add api for EmailTemplates, add tests and examples by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/34
+- Fix issue #19: Add ContactFieldsApi, related models, tests, examples by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/35
+- Fix issue #20: Add ContactListsApi, related models, tests, examples by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/36
+- Fix issue #21: Add ContactsApi, related models, tests, examples by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/37
+- Fix issue #22: Add ContactImportsApi, related models, tests, examples by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/38
+- Fix issue #23: Add SuppressionsApi, related models, tests and examples by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/39
+- Fix issue #27: Add InboxesApi, related models, tests, examples. by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/40
+- Fix issue #26: Add MessagesApi, releated models, examples, tests by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/43
+- Fix issue #28: Add AttachmentsApi, related models, tests, examples by @Ihor-Bilous in https://github.com/railsware/mailtrap-python/pull/44
+
 ## [2.1.0] - 2025-05-12
 - Add sandbox mode support in MailtrapClient
   - It requires inbox_id parameter to be set
