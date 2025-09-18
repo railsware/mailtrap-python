@@ -3,8 +3,8 @@ from typing import Optional
 import mailtrap as mt
 from mailtrap.models.suppressions import Suppression
 
-API_TOKEN = "YOU_API_TOKEN"
-ACCOUNT_ID = "YOU_ACCOUNT_ID"
+API_TOKEN = "YOUR_API_TOKEN"
+ACCOUNT_ID = "YOUR_ACCOUNT_ID"
 
 client = mt.MailtrapClient(token=API_TOKEN, account_id=ACCOUNT_ID)
 suppressions_api = client.suppressions_api.suppressions

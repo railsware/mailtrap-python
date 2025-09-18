@@ -1,6 +1,6 @@
 import mailtrap as mt
 
-API_TOKEN = "<YOU_API_TOKEN>"
+API_TOKEN = "<YOUR_API_TOKEN>"
 INBOX_ID = "<YOUR_INBOX_ID>"
 
 
@@ -19,7 +19,7 @@ mail = mt.Mail(
 mail_from_template = mt.MailFromTemplate(
     sender=mt.Address(email="<SENDER_EMAIL>", name="<SENDER_NAME>"),
     to=[mt.Address(email="<RECEIVER_EMAIL>")],
-    template_uuid="<YOUT_TEMPLATE_UUID>",
+    template_uuid="<YOUR_TEMPLATE_UUID>",
     template_variables={
         "company_info_name": "Test_Company_info_name",
         "name": "Test_Name",

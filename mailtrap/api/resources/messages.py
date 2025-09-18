@@ -107,13 +107,13 @@ class MessagesApi:
         response = self._client.get(f"{self._api_path(inbox_id, message_id)}/analyze")
         return AnalysisReportResponse(**response).report
 
-    def get_text_body(self, inbox_id: int, message_id: int) -> str:
+    def get_text_message(self, inbox_id: int, message_id: int) -> str:
         """Get text email body, if it exists."""
         return cast(
             str, self._client.get(f"{self._api_path(inbox_id, message_id)}/body.txt")
         )
 
-    def get_raw_body(self, inbox_id: int, message_id: int) -> str:
+    def get_raw_message(self, inbox_id: int, message_id: int) -> str:
         """Get raw email body."""
         return cast(
             str, self._client.get(f"{self._api_path(inbox_id, message_id)}/body.raw")
@@ -126,13 +126,13 @@ class MessagesApi:
             self._client.get(f"{self._api_path(inbox_id, message_id)}/body.htmlsource"),
         )
 
-    def get_html_body(self, inbox_id: int, message_id: int) -> str:
+    def get_html_message(self, inbox_id: int, message_id: int) -> str:
         """Get formatted HTML email body. Not applicable for plain text emails."""
         return cast(
             str, self._client.get(f"{self._api_path(inbox_id, message_id)}/body.html")
         )
 
-    def get_eml_body(self, inbox_id: int, message_id: int) -> str:
+    def get_message_as_eml(self, inbox_id: int, message_id: int) -> str:
         """Get email message in .eml format."""
         return cast(
             str, self._client.get(f"{self._api_path(inbox_id, message_id)}/body.eml")

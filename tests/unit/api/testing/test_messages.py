@@ -571,7 +571,7 @@ class TestMessagesApi:
         ],
     )
     @responses.activate
-    def test_get_text_body_should_raise_api_errors(
+    def test_get_text_message_should_raise_api_errors(
         self,
         client: MessagesApi,
         status_code: int,
@@ -588,12 +588,14 @@ class TestMessagesApi:
         )
 
         with pytest.raises(APIError) as exc_info:
-            client.get_text_body(INBOX_ID, MESSAGE_ID)
+            client.get_text_message(INBOX_ID, MESSAGE_ID)
 
         assert expected_error_message in str(exc_info.value)
 
     @responses.activate
-    def test_get_text_body_should_return_text_content(self, client: MessagesApi) -> None:
+    def test_get_text_message_should_return_text_content(
+        self, client: MessagesApi
+    ) -> None:
         url = f"{BASE_MESSAGES_URL}/{MESSAGE_ID}/body.txt"
         text_content = "Congrats for sending test email with Mailtrap!"
         responses.get(
@@ -603,7 +605,7 @@ class TestMessagesApi:
             content_type="text/plain",
         )
 
-        result = client.get_text_body(INBOX_ID, MESSAGE_ID)
+        result = client.get_text_message(INBOX_ID, MESSAGE_ID)
 
         assert result == text_content
 
@@ -631,7 +633,7 @@ class TestMessagesApi:
         ],
     )
     @responses.activate
-    def test_get_html_body_should_raise_api_errors(
+    def test_get_html_message_should_raise_api_errors(
         self,
         client: MessagesApi,
         status_code: int,
@@ -648,12 +650,14 @@ class TestMessagesApi:
         )
 
         with pytest.raises(APIError) as exc_info:
-            client.get_html_body(INBOX_ID, MESSAGE_ID)
+            client.get_html_message(INBOX_ID, MESSAGE_ID)
 
         assert expected_error_message in str(exc_info.value)
 
     @responses.activate
-    def test_get_html_body_should_return_html_content(self, client: MessagesApi) -> None:
+    def test_get_html_message_should_return_html_content(
+        self, client: MessagesApi
+    ) -> None:
         url = f"{BASE_MESSAGES_URL}/{MESSAGE_ID}/body.html"
         html_content = "<html><body>Test HTML content</body></html>"
         responses.get(
@@ -663,7 +667,7 @@ class TestMessagesApi:
             content_type="text/html",
         )
 
-        result = client.get_html_body(INBOX_ID, MESSAGE_ID)
+        result = client.get_html_message(INBOX_ID, MESSAGE_ID)
 
         assert result == html_content
 
@@ -691,7 +695,7 @@ class TestMessagesApi:
         ],
     )
     @responses.activate
-    def test_get_raw_body_should_raise_api_errors(
+    def test_get_raw_message_should_raise_api_errors(
         self,
         client: MessagesApi,
         status_code: int,
@@ -708,12 +712,12 @@ class TestMessagesApi:
         )
 
         with pytest.raises(APIError) as exc_info:
-            client.get_raw_body(INBOX_ID, MESSAGE_ID)
+            client.get_raw_message(INBOX_ID, MESSAGE_ID)
 
         assert expected_error_message in str(exc_info.value)
 
     @responses.activate
-    def test_get_raw_body_should_return_raw_content(self, client: MessagesApi) -> None:
+    def test_get_raw_message_should_return_raw_content(self, client: MessagesApi) -> None:
         url = f"{BASE_MESSAGES_URL}/{MESSAGE_ID}/body.raw"
         raw_content = (
             "From: test@example.com\nTo: recipient@example.com\n"
@@ -726,7 +730,7 @@ class TestMessagesApi:
             content_type="text/plain",
         )
 
-        result = client.get_raw_body(INBOX_ID, MESSAGE_ID)
+        result = client.get_raw_message(INBOX_ID, MESSAGE_ID)
 
         assert result == raw_content
 
@@ -814,7 +818,7 @@ class TestMessagesApi:
         ],
     )
     @responses.activate
-    def test_get_eml_body_should_raise_api_errors(
+    def test_get_message_as_eml_should_raise_api_errors(
         self,
         client: MessagesApi,
         status_code: int,
@@ -831,12 +835,14 @@ class TestMessagesApi:
         )
 
         with pytest.raises(APIError) as exc_info:
-            client.get_eml_body(INBOX_ID, MESSAGE_ID)
+            client.get_message_as_eml(INBOX_ID, MESSAGE_ID)
 
         assert expected_error_message in str(exc_info.value)
 
     @responses.activate
-    def test_get_eml_body_should_return_eml_content(self, client: MessagesApi) -> None:
+    def test_get_message_as_eml_should_return_eml_content(
+        self, client: MessagesApi
+    ) -> None:
         url = f"{BASE_MESSAGES_URL}/{MESSAGE_ID}/body.eml"
         eml_content = (
             "From: test@example.com\nTo: recipient@example.com\n"
@@ -849,7 +855,7 @@ class TestMessagesApi:
             content_type="message/rfc822",
         )
 
-        result = client.get_eml_body(INBOX_ID, MESSAGE_ID)
+        result = client.get_message_as_eml(INBOX_ID, MESSAGE_ID)
 
         assert result == eml_content
 
