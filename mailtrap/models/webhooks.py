@@ -15,6 +15,7 @@ class Webhook:
     payload_format: str
     sending_stream: Optional[str] = None
     domain_id: Optional[int] = None
+    inbound_inbox_id: Optional[int] = None
     event_types: list[str] = Field(default_factory=list)
 
 
@@ -47,6 +48,7 @@ class CreateWebhookParams(RequestParams):
     sending_stream: Optional[str] = None
     event_types: Optional[list[str]] = None
     domain_id: Optional[int] = None
+    inbound_inbox_id: Optional[int] = None
 
 
 @dataclass
@@ -55,3 +57,4 @@ class UpdateWebhookParams(RequestParams):
     active: Optional[bool] = None
     payload_format: Optional[str] = None
     event_types: Optional[list[str]] = None
+    inbound_inbox_id: Optional[int] = None
