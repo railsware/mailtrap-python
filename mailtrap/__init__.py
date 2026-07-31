@@ -20,6 +20,12 @@ from .models.contacts import UpdateContactParams
 from .models.email_logs import EmailLogMessage
 from .models.email_logs import EmailLogsListFilters
 from .models.email_logs import EmailLogsListResponse
+from .models.inbound import CreateInboundFolderParams
+from .models.inbound import CreateInboundInboxParams
+from .models.inbound import ForwardInboundMessageParams
+from .models.inbound import ReplyInboundMessageParams
+from .models.inbound import UpdateInboundFolderParams
+from .models.inbound import UpdateInboundInboxParams
 from .models.inboxes import CreateInboxParams
 from .models.inboxes import UpdateInboxParams
 from .models.mail import Address
