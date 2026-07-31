@@ -1,3 +1,7 @@
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+
 import mailtrap as mt
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.email_campaigns import EmailCampaign
@@ -5,10 +9,10 @@ from mailtrap.models.email_campaigns import EmailCampaignListResponse
 from mailtrap.models.email_campaigns import EmailCampaignStats
 
 API_TOKEN = "YOUR_API_TOKEN"
-ACCOUNT_ID = "YOUR_ACCOUNT_ID"
 DOMAIN_ID = 4321
 
-client = mt.MailtrapClient(token=API_TOKEN, account_id=ACCOUNT_ID)
+# The Email Campaigns API is token-scoped — no `account_id` is needed.
+client = mt.MailtrapClient(token=API_TOKEN)
 email_campaigns_api = client.email_campaigns_api.email_campaigns
 
 
@@ -37,7 +41,9 @@ def create_email_campaign() -> EmailCampaign:
                 local_part="support",
                 domain="acme.com",
             ),
-            template_attributes=mt.TemplateAttributes(subject="Spring is here — 30% off"),
+            template_attributes=mt.CreateTemplateAttributes(
+                subject="Spring is here — 30% off"
+            ),
         )
     )
 
@@ -68,12 +74,13 @@ def update_email_campaign(email_campaign_id: int) -> EmailCampaign:
 
 
 def schedule_email_campaign(email_campaign_id: int) -> EmailCampaign:
-    # The campaign must be a `draft`; the time comes back in
-    # `current_state_metadata.scheduled_at`.
+    # The campaign must be a `draft`; the time must be in the future (at most
+    # 1 month ahead) and comes back in `current_state_metadata.scheduled_at`.
+    send_at = datetime.now(timezone.utc) + timedelta(days=1)
     return email_campaigns_api.schedule(
         email_campaign_id=email_campaign_id,
         schedule_params=mt.ScheduleEmailCampaignParams(
-            datetime="2026-06-01T09:00:00.000Z"
+            datetime=send_at.isoformat(timespec="milliseconds").replace("+00:00", "Z")
         ),
     )
 
@@ -99,10 +106,11 @@ def reset_email_campaign(email_campaign_id: int) -> EmailCampaign:
 
 
 def get_email_campaign_stats(email_campaign_id: int) -> EmailCampaignStats:
+    today = datetime.now(timezone.utc).date()
     return email_campaigns_api.get_stats(
         email_campaign_id=email_campaign_id,
-        start_date="2026-05-01",
-        end_date="2026-05-31",
+        start_date=(today - timedelta(days=30)).isoformat(),
+        end_date=today.isoformat(),
     )
 
 

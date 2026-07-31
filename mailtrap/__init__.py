@@ -19,6 +19,7 @@ from .models.contacts import UpdateContactFieldParams
 from .models.contacts import UpdateContactParams
 from .models.email_campaigns import CampaignTemplate
 from .models.email_campaigns import CreateEmailCampaignParams
+from .models.email_campaigns import CreateTemplateAttributes
 from .models.email_campaigns import DeliveryOptions
 from .models.email_campaigns import EmailCampaign
 from .models.email_campaigns import EmailCampaignListResponse

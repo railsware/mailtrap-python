@@ -1,3 +1,4 @@
+import json
 from typing import Any
 from urllib.parse import parse_qs
 from urllib.parse import urlparse
@@ -11,6 +12,7 @@ from mailtrap.exceptions import APIError
 from mailtrap.http import HttpClient
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.email_campaigns import CreateEmailCampaignParams
+from mailtrap.models.email_campaigns import CreateTemplateAttributes
 from mailtrap.models.email_campaigns import DeliveryOptions
 from mailtrap.models.email_campaigns import EmailCampaign
 from mailtrap.models.email_campaigns import EmailCampaignListResponse
@@ -21,7 +23,6 @@ from mailtrap.models.email_campaigns import TemplateAttributes
 from mailtrap.models.email_campaigns import UpdateEmailCampaignParams
 from tests import conftest
 
-ACCOUNT_ID = "26730"
 CAMPAIGN_ID = 4567
 DOMAIN_ID = 4321
 # The endpoint is token-scoped, NOT under /api/accounts/{account_id}.
@@ -30,7 +31,7 @@ BASE_CAMPAIGNS_URL = f"https://{GENERAL_HOST}/api/email_campaigns"
 
 @pytest.fixture
 def client() -> EmailCampaignsApi:
-    return EmailCampaignsApi(client=HttpClient(GENERAL_HOST), account_id=ACCOUNT_ID)
+    return EmailCampaignsApi(client=HttpClient(GENERAL_HOST))
 
 
 @pytest.fixture
@@ -319,7 +320,7 @@ class TestEmailCampaignsApi:
                     name="Spring Sale",
                     domain_id=DOMAIN_ID,
                     from_local_part="news",
-                    template_attributes=TemplateAttributes(subject="Spring!"),
+                    template_attributes=CreateTemplateAttributes(subject="Spring!"),
                 )
             )
 
@@ -338,7 +339,7 @@ class TestEmailCampaignsApi:
                 name="Spring Sale",
                 domain_id=DOMAIN_ID,
                 from_local_part="news",
-                template_attributes=TemplateAttributes(
+                template_attributes=CreateTemplateAttributes(
                     subject="Spring is here — 30% off"
                 ),
                 from_display_name="Acme Marketing",
@@ -357,16 +358,19 @@ class TestEmailCampaignsApi:
 
         assert len(responses.calls) == 1
         # The request body is flat — no `email_campaign` wrapper.
-        assert responses.calls[0].request.body == (
-            b'{"name": "Spring Sale", '
-            b'"domain_id": 4321, '
-            b'"from_local_part": "news", '
-            b'"template_attributes": {"subject": "Spring is here \\u2014 30% off"}, '
-            b'"from_display_name": "Acme Marketing", '
-            b'"reply_to": {"display_name": "Acme Support", '
-            b'"local_part": "support", "domain": "acme.com"}, '
-            b'"contact_list_ids": [55, 56]}'
-        )
+        assert json.loads(responses.calls[0].request.body) == {
+            "name": "Spring Sale",
+            "domain_id": 4321,
+            "from_local_part": "news",
+            "template_attributes": {"subject": "Spring is here — 30% off"},
+            "from_display_name": "Acme Marketing",
+            "reply_to": {
+                "display_name": "Acme Support",
+                "local_part": "support",
+                "domain": "acme.com",
+            },
+            "contact_list_ids": [55, 56],
+        }
 
     @responses.activate
     def test_update_should_send_only_supplied_fields_flat(
@@ -395,14 +399,16 @@ class TestEmailCampaignsApi:
         assert isinstance(campaign, EmailCampaign)
         assert campaign.delivery_mode == "gradual"
 
-        assert responses.calls[0].request.body == (
-            b'{"template_attributes": {"subject": "New subject", '
-            b'"body_html": "<html><body>Hi</body></html>", '
-            b'"merge_tags": ["first_name"]}, '
-            b'"delivery_mode": "gradual", '
-            b'"delivery_options": {"emails_per_hour": 1000}, '
-            b'"contact_segment_ids": [12]}'
-        )
+        assert json.loads(responses.calls[0].request.body) == {
+            "template_attributes": {
+                "subject": "New subject",
+                "body_html": "<html><body>Hi</body></html>",
+                "merge_tags": ["first_name"],
+            },
+            "delivery_mode": "gradual",
+            "delivery_options": {"emails_per_hour": 1000},
+            "contact_segment_ids": [12],
+        }
 
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
@@ -556,9 +562,9 @@ class TestEmailCampaignsApi:
         assert campaign.current_state == "scheduled"
         assert campaign.current_state_metadata is not None
         assert campaign.current_state_metadata.scheduled_at == "2026-06-01T09:00:00.000Z"
-        assert responses.calls[0].request.body == (
-            b'{"datetime": "2026-06-01T09:00:00.000Z"}'
-        )
+        assert json.loads(responses.calls[0].request.body) == {
+            "datetime": "2026-06-01T09:00:00.000Z"
+        }
 
     @responses.activate
     def test_schedule_should_raise_api_error_for_invalid_datetime(

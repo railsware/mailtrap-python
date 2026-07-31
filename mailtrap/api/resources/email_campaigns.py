@@ -15,8 +15,7 @@ from mailtrap.models.email_campaigns import UpdateEmailCampaignParams
 
 
 class EmailCampaignsApi:
-    def __init__(self, client: HttpClient, account_id: str) -> None:
-        self._account_id = account_id
+    def __init__(self, client: HttpClient) -> None:
         self._client = client
 
     def get_list(

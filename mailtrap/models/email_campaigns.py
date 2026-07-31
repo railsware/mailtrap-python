@@ -27,12 +27,25 @@ class DeliveryOptions:
 @dataclass
 class TemplateAttributes:
     """
-    Inline email template — the campaign's subject and design. ``subject`` is
-    required when creating a campaign. On update only the sub-fields you
-    provide change; ``merge_tags`` is replaced as a whole when provided.
+    Inline email template — the campaign's subject and design. On update only
+    the sub-fields you provide change; ``merge_tags`` is replaced as a whole
+    when provided.
     """
 
     subject: Optional[str] = None
+    body_html: Optional[str] = None
+    body_text: Optional[str] = None
+    merge_tags: Optional[list[str]] = None
+
+
+@dataclass
+class CreateTemplateAttributes:
+    """
+    Inline email template for creating a campaign — ``subject`` is required;
+    the design fields are optional until the campaign is scheduled or started.
+    """
+
+    subject: str
     body_html: Optional[str] = None
     body_text: Optional[str] = None
     merge_tags: Optional[list[str]] = None
@@ -183,7 +196,7 @@ class CreateEmailCampaignParams(RequestParams):
     name: str
     domain_id: int
     from_local_part: str
-    template_attributes: TemplateAttributes
+    template_attributes: CreateTemplateAttributes
     from_display_name: Optional[str] = None
     reply_to: Optional[ReplyTo] = None
     delivery_mode: Optional[str] = None
