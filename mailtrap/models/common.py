@@ -4,20 +4,62 @@ from typing import TypeVar
 from typing import Union
 from typing import cast
 
+from pydantic import GetCoreSchemaHandler
 from pydantic import TypeAdapter
 from pydantic.dataclasses import dataclass
+from pydantic_core import core_schema
 
 T = TypeVar("T", bound="RequestParams")
+
+
+class UnsetType:
+    """
+    Sentinel type for request fields that should be omitted from the payload.
+
+    api_data drops fields whose value is UNSET, keeping an omitted field
+    distinct from an explicit None value.
+    """
+
+    _instance: Optional["UnsetType"] = None
+
+    def __new__(cls) -> "UnsetType":
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __repr__(self) -> str:
+        return "UNSET"
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        return core_schema.is_instance_schema(
+            cls,
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                cls._serialize
+            ),
+        )
+
+    @staticmethod
+    def _serialize(value: "UnsetType") -> "UnsetType":
+        return value
+
+
+UNSET = UnsetType()
 
 
 @dataclass
 class RequestParams:
     @property
     def api_data(self: T) -> dict[str, Any]:
-        return cast(
+        data = cast(
             dict[str, Any],
             TypeAdapter(type(self)).dump_python(self, by_alias=True, exclude_none=True),
         )
+        return {
+            key: value for key, value in data.items() if not isinstance(value, UnsetType)
+        }
 
     @property
     def api_query_params(self: T) -> dict[str, Any]:

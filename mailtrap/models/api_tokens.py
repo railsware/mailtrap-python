@@ -1,10 +1,13 @@
+from typing import Any
 from typing import Optional
 from typing import Union
 
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
+from mailtrap.models.common import UNSET
 from mailtrap.models.common import RequestParams
+from mailtrap.models.common import UnsetType
 
 
 @dataclass
@@ -32,4 +35,14 @@ class ApiTokenWithToken(ApiToken):
 @dataclass
 class CreateApiTokenParams(RequestParams):
     name: str
+    expires_at: Union[str, None, UnsetType] = UNSET
     resources: list[ApiTokenResource] = Field(default_factory=list)
+
+    @property
+    def api_data(self) -> dict[str, Any]:
+        data = super().api_data
+        # exclude_none strips an explicit None, but here it must be sent
+        # as "expires_at": null (a token that never expires).
+        if self.expires_at is None:
+            data["expires_at"] = None
+        return data

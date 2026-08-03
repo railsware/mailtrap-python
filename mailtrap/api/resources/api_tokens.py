@@ -31,6 +31,11 @@ class ApiTokensApi:
         """
         Create a new API token. The full token value is only returned once
         in the response — store it securely.
+
+        expires_at is an optional token expiration as an ISO 8601 date-time.
+        Omit it for the server default (a 1-year default is being rolled out).
+        Pass an explicit None for a token that never expires. Past or
+        more-than-5-years-ahead values are rejected with a 422 error.
         """
         response = self._client.post(
             self._api_path(account_id), json=token_params.api_data
