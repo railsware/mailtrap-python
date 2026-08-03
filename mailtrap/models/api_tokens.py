@@ -46,3 +46,17 @@ class CreateApiTokenParams(RequestParams):
         if self.expires_at is None:
             data["expires_at"] = None
         return data
+
+
+@dataclass
+class ResetApiTokenParams(RequestParams):
+    expires_at: Union[str, None, UnsetType] = UNSET
+
+    @property
+    def api_data(self) -> dict[str, Any]:
+        data = super().api_data
+        # exclude_none strips an explicit None, but here it must be sent
+        # as "expires_at": null (a token that never expires).
+        if self.expires_at is None:
+            data["expires_at"] = None
+        return data
