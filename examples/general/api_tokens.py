@@ -22,10 +22,14 @@ def get_api_token(account_id: int, api_token_id: int) -> ApiToken:
 
 def create_api_token(account_id: int) -> ApiTokenWithToken:
     # The full token value is only returned once on the response — store it securely.
+    # Omit expires_at for the server default expiration, pass an ISO 8601
+    # date-time for an explicit expiry, or pass expires_at=None for a token
+    # that never expires.
     return api_tokens_api.create(
         account_id=account_id,
         token_params=mt.CreateApiTokenParams(
             name="My API Token",
+            expires_at="2027-06-01T00:00:00Z",
             resources=[
                 mt.ApiTokenResource(
                     resource_type="account",
@@ -39,7 +43,20 @@ def create_api_token(account_id: int) -> ApiTokenWithToken:
 
 def reset_api_token(account_id: int, api_token_id: int) -> ApiTokenWithToken:
     # The reset response includes the new full token value once — store it securely.
+    # Omit token_params for the server default expiration of the new token.
     return api_tokens_api.reset(account_id=account_id, api_token_id=api_token_id)
+
+
+def reset_api_token_with_expiration(
+    account_id: int, api_token_id: int
+) -> ApiTokenWithToken:
+    # Pass an ISO 8601 date-time for an explicit expiry of the new token,
+    # or expires_at=None for a token that never expires.
+    return api_tokens_api.reset(
+        account_id=account_id,
+        api_token_id=api_token_id,
+        token_params=mt.ResetApiTokenParams(expires_at="2027-06-01T00:00:00Z"),
+    )
 
 
 def delete_api_token(account_id: int, api_token_id: int) -> DeletedObject:
@@ -59,5 +76,8 @@ if __name__ == "__main__":
     reset = reset_api_token(ACCOUNT_ID, created.id)
     print(reset)
 
-    deleted = delete_api_token(ACCOUNT_ID, reset.id)
+    reset_with_expiration = reset_api_token_with_expiration(ACCOUNT_ID, reset.id)
+    print(reset_with_expiration)
+
+    deleted = delete_api_token(ACCOUNT_ID, reset_with_expiration.id)
     print(deleted)
