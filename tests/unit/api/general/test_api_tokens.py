@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import pytest
@@ -11,6 +12,7 @@ from mailtrap.models.api_tokens import ApiToken
 from mailtrap.models.api_tokens import ApiTokenResource
 from mailtrap.models.api_tokens import ApiTokenWithToken
 from mailtrap.models.api_tokens import CreateApiTokenParams
+from mailtrap.models.api_tokens import ResetApiTokenParams
 from mailtrap.models.common import DeletedObject
 from tests import conftest
 
@@ -176,6 +178,11 @@ class TestApiTokensApi:
                 conftest.FORBIDDEN_RESPONSE,
                 conftest.FORBIDDEN_ERROR_MESSAGE,
             ),
+            (
+                conftest.VALIDATION_ERRORS_STATUS_CODE,
+                {"errors": {"expires_at": ["must be in the future"]}},
+                "expires_at: must be in the future",
+            ),
         ],
     )
     @responses.activate
@@ -227,6 +234,65 @@ class TestApiTokensApi:
             b'{"name": "My API Token", "resources": '
             b'[{"resource_type": "account", "resource_id": 3229, "access_level": 100}]}'
         )
+
+    @responses.activate
+    def test_create_should_omit_expires_at_from_body_by_default(
+        self, client: ApiTokensApi, sample_api_token_dict: dict
+    ) -> None:
+        responses.post(
+            BASE_API_TOKENS_URL,
+            json={**sample_api_token_dict, "token": "a1b2c3d4e5f6"},
+            status=200,
+        )
+
+        client.create(ACCOUNT_ID, CreateApiTokenParams(name="My API Token"))
+
+        body = json.loads(responses.calls[0].request.body)
+        assert body == {"name": "My API Token", "resources": []}
+
+    @responses.activate
+    def test_create_should_send_null_expires_at_for_never_expiring_token(
+        self, client: ApiTokensApi, sample_api_token_dict: dict
+    ) -> None:
+        responses.post(
+            BASE_API_TOKENS_URL,
+            json={**sample_api_token_dict, "token": "a1b2c3d4e5f6"},
+            status=200,
+        )
+
+        client.create(
+            ACCOUNT_ID, CreateApiTokenParams(name="My API Token", expires_at=None)
+        )
+
+        body = json.loads(responses.calls[0].request.body)
+        assert body == {"name": "My API Token", "resources": [], "expires_at": None}
+
+    @responses.activate
+    def test_create_should_send_expires_at_value(
+        self, client: ApiTokensApi, sample_api_token_dict: dict
+    ) -> None:
+        responses.post(
+            BASE_API_TOKENS_URL,
+            json={
+                **sample_api_token_dict,
+                "expires_at": "2027-06-01T00:00:00Z",
+                "token": "a1b2c3d4e5f6",
+            },
+            status=200,
+        )
+
+        token = client.create(
+            ACCOUNT_ID,
+            CreateApiTokenParams(name="My API Token", expires_at="2027-06-01T00:00:00Z"),
+        )
+
+        body = json.loads(responses.calls[0].request.body)
+        assert body == {
+            "name": "My API Token",
+            "expires_at": "2027-06-01T00:00:00Z",
+            "resources": [],
+        }
+        assert token.expires_at == "2027-06-01T00:00:00Z"
 
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
@@ -292,6 +358,11 @@ class TestApiTokensApi:
                 conftest.NOT_FOUND_RESPONSE,
                 conftest.NOT_FOUND_ERROR_MESSAGE,
             ),
+            (
+                conftest.VALIDATION_ERRORS_STATUS_CODE,
+                {"errors": {"expires_at": ["must be in the future"]}},
+                "expires_at: must be in the future",
+            ),
         ],
     )
     @responses.activate
@@ -328,3 +399,47 @@ class TestApiTokensApi:
         assert isinstance(token, ApiTokenWithToken)
         assert token.id == API_TOKEN_ID
         assert token.token == "new-token-value"
+
+        assert len(responses.calls) == 1
+        assert responses.calls[0].request.body is None
+
+    @responses.activate
+    def test_reset_should_send_null_expires_at_for_never_expiring_token(
+        self, client: ApiTokensApi, sample_api_token_dict: dict
+    ) -> None:
+        responses.post(
+            f"{BASE_API_TOKENS_URL}/{API_TOKEN_ID}/reset",
+            json={**sample_api_token_dict, "token": "new-token-value"},
+            status=200,
+        )
+
+        client.reset(
+            ACCOUNT_ID, API_TOKEN_ID, token_params=ResetApiTokenParams(expires_at=None)
+        )
+
+        body = json.loads(responses.calls[0].request.body)
+        assert body == {"expires_at": None}
+
+    @responses.activate
+    def test_reset_should_send_expires_at_value(
+        self, client: ApiTokensApi, sample_api_token_dict: dict
+    ) -> None:
+        responses.post(
+            f"{BASE_API_TOKENS_URL}/{API_TOKEN_ID}/reset",
+            json={
+                **sample_api_token_dict,
+                "expires_at": "2027-06-01T00:00:00Z",
+                "token": "new-token-value",
+            },
+            status=200,
+        )
+
+        token = client.reset(
+            ACCOUNT_ID,
+            API_TOKEN_ID,
+            token_params=ResetApiTokenParams(expires_at="2027-06-01T00:00:00Z"),
+        )
+
+        body = json.loads(responses.calls[0].request.body)
+        assert body == {"expires_at": "2027-06-01T00:00:00Z"}
+        assert token.expires_at == "2027-06-01T00:00:00Z"
