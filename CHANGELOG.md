@@ -1,3 +1,12 @@
+## [2.7.0] - 2026-08-04
+
+## What's Changed
+* MT-22678: Add search filter to contact lists get_list by @Rabsztok in https://github.com/mailtrap/mailtrap-python/pull/73
+* Add Inbound Email API support by @mklocek in https://github.com/mailtrap/mailtrap-python/pull/75
+
+
+**Full Changelog**: https://github.com/mailtrap/mailtrap-python/compare/v2.6.1...v2.7.0
+
 ## [2.6.1] - 2026-07-09
 
 ## What's Changed
