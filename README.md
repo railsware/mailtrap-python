@@ -244,6 +244,12 @@ The same situation applies to both `client.batch_send()` and `client.sending_api
 ### Sending Domains API:
 - Sending Domains – [`sending_domains/sending_domains.py`](examples/sending_domains/sending_domains.py)
 
+### Inbound Email API:
+- Folders management – [`inbound/folders.py`](examples/inbound/folders.py)
+- Inboxes management – [`inbound/inboxes.py`](examples/inbound/inboxes.py)
+- Messages (list/get/delete + reply/reply_all/forward) – [`inbound/messages.py`](examples/inbound/messages.py)
+- Threads (list/get/delete) – [`inbound/threads.py`](examples/inbound/threads.py)
+
 ### Webhooks API:
 - Webhooks management – [`webhooks/webhooks.py`](examples/webhooks/webhooks.py)
 - Verifying webhook signatures – [`webhooks/verify_signature.py`](examples/webhooks/verify_signature.py)

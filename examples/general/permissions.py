@@ -1,11 +1,13 @@
+import os
+
 import mailtrap as mt
 from mailtrap.models.permissions import PermissionResource
 from mailtrap.models.permissions import UpdatePermissionsResponse
 
-API_TOKEN = "YOUR_API_TOKEN"
-ACCOUNT_ID = "YOUR_ACCOUNT_ID"
+API_KEY = os.environ["MAILTRAP_API_KEY"]
+ACCOUNT_ID = os.environ["MAILTRAP_ACCOUNT_ID"]
 
-client = mt.MailtrapClient(token=API_TOKEN)
+client = mt.MailtrapClient(token=API_KEY)
 permissions_api = client.general_api.permissions
 
 

@@ -1,9 +1,11 @@
+import os
+
 import mailtrap as mt
 from mailtrap.models.accounts import Account
 
-API_TOKEN = "YOUR_API_TOKEN"
+API_KEY = os.environ["MAILTRAP_API_KEY"]
 
-client = mt.MailtrapClient(token=API_TOKEN)
+client = mt.MailtrapClient(token=API_KEY)
 accounts_api = client.general_api.accounts
 
 

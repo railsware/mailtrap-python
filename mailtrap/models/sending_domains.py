@@ -40,6 +40,8 @@ class SendingDomain:
     alert_recipient_email: Optional[str] = None
     dns_verified_at: Optional[str] = None
     dns_records: list[DnsRecord] = Field(default_factory=list)
+    inbound_enabled: Optional[bool] = None
+    inbound_verified: Optional[bool] = None
 
 
 @dataclass

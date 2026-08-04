@@ -1,3 +1,5 @@
+import os
+
 """Example: List email logs and get a single message by ID."""
 
 from datetime import datetime
@@ -10,10 +12,10 @@ from mailtrap.models.email_logs import filter_ci_equal
 from mailtrap.models.email_logs import filter_string_equal
 from mailtrap.models.email_logs import filter_string_not_empty
 
-API_TOKEN = "YOUR_API_TOKEN"
-ACCOUNT_ID = "YOUR_ACCOUNT_ID"
+API_KEY = os.environ["MAILTRAP_API_KEY"]
+ACCOUNT_ID = os.environ["MAILTRAP_ACCOUNT_ID"]
 
-client = mt.MailtrapClient(token=API_TOKEN, account_id=ACCOUNT_ID)
+client = mt.MailtrapClient(token=API_KEY, account_id=ACCOUNT_ID)
 email_logs_api = client.email_logs_api.email_logs
 
 

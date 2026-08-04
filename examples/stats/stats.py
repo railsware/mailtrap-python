@@ -1,12 +1,14 @@
+import os
+
 import mailtrap as mt
 from mailtrap.models.stats import SendingStatGroup
 from mailtrap.models.stats import SendingStats
 from mailtrap.models.stats import StatsFilterParams
 
-API_TOKEN = "YOUR_API_TOKEN"
-ACCOUNT_ID = "YOUR_ACCOUNT_ID"
+API_KEY = os.environ["MAILTRAP_API_KEY"]
+ACCOUNT_ID = os.environ["MAILTRAP_ACCOUNT_ID"]
 
-client = mt.MailtrapClient(token=API_TOKEN)
+client = mt.MailtrapClient(token=API_KEY)
 stats_api = client.stats_api
 
 

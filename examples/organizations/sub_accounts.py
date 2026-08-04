@@ -1,10 +1,12 @@
+import os
+
 import mailtrap as mt
 from mailtrap.models.organizations import SubAccount
 
-API_TOKEN = "YOUR_API_TOKEN"
-ORGANIZATION_ID = "YOUR_ORGANIZATION_ID"
+API_KEY = os.environ["MAILTRAP_API_KEY"]
+ORGANIZATION_ID = os.environ["MAILTRAP_ORGANIZATION_ID"]
 
-client = mt.MailtrapClient(token=API_TOKEN, organization_id=ORGANIZATION_ID)
+client = mt.MailtrapClient(token=API_KEY, organization_id=ORGANIZATION_ID)
 sub_accounts_api = client.organizations_api.sub_accounts
 
 

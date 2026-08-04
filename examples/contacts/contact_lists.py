@@ -1,11 +1,13 @@
+import os
+
 import mailtrap as mt
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.contacts import ContactList
 
-API_TOKEN = "YOUR_API_TOKEN"
-ACCOUNT_ID = "YOUR_ACCOUNT_ID"
+API_KEY = os.environ["MAILTRAP_API_KEY"]
+ACCOUNT_ID = os.environ["MAILTRAP_ACCOUNT_ID"]
 
-client = mt.MailtrapClient(token=API_TOKEN, account_id=ACCOUNT_ID)
+client = mt.MailtrapClient(token=API_KEY, account_id=ACCOUNT_ID)
 contact_lists_api = client.contacts_api.contact_lists
 
 

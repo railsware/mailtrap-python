@@ -41,6 +41,35 @@ class TestEmailLogMessage:
         assert msg.status == "delivered"
         assert msg.raw_message_url is None
         assert msg.events == []
+        # threading fields default when absent
+        assert msg.rfc_message_id is None
+        assert msg.in_reply_to is None
+        assert msg.references == []
+        assert msg.thread_id is None
+
+    def test_parses_threading_fields_when_present(self) -> None:
+        data: dict[str, Any] = {
+            "message_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "status": "delivered",
+            "from": "sender@example.com",
+            "to": "recipient@example.com",
+            "sent_at": "2025-01-15T10:30:00Z",
+            "custom_variables": {},
+            "sending_stream": "transactional",
+            "sending_domain_id": 3938,
+            "template_variables": {},
+            "opens_count": 0,
+            "clicks_count": 0,
+            "rfc_message_id": "<abc@example.com>",
+            "in_reply_to": "<parent@example.com>",
+            "references": ["<root@example.com>", "<parent@example.com>"],
+            "thread_id": "thread-1",
+        }
+        msg = EmailLogMessage.from_api(data)
+        assert msg.rfc_message_id == "<abc@example.com>"
+        assert msg.in_reply_to == "<parent@example.com>"
+        assert msg.references == ["<root@example.com>", "<parent@example.com>"]
+        assert msg.thread_id == "thread-1"
 
     def test_from_api_handles_from_and_events(self) -> None:
         data: dict[str, Any] = {

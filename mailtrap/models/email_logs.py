@@ -134,6 +134,10 @@ class EmailLogMessage(BaseModel):
     message_id: str
     status: Literal["delivered", "not_delivered", "enqueued", "opted_out"]
     subject: Optional[str] = None
+    rfc_message_id: Optional[str] = None
+    in_reply_to: Optional[str] = None
+    references: list[str] = Field(default_factory=list)
+    thread_id: Optional[str] = None
     from_: str = Field(alias="from")
     to: str
     sent_at: str
@@ -161,6 +165,8 @@ class EmailLogMessage(BaseModel):
             payload["custom_variables"] = {}
         if payload.get("template_variables") is None:
             payload["template_variables"] = {}
+        if payload.get("references") is None:
+            payload["references"] = []
         return cls(**payload)
 
 
