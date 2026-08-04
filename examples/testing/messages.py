@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 import mailtrap as mt
@@ -6,11 +7,11 @@ from mailtrap.models.messages import EmailMessage
 from mailtrap.models.messages import ForwardedMessage
 from mailtrap.models.messages import SpamReport
 
-API_TOKEN = "YOUR_API_TOKEN"
-ACCOUNT_ID = "YOUR_ACCOUNT_ID"
-INBOX_ID = "YOUR_INBOX_ID"
+API_KEY = os.environ["MAILTRAP_API_KEY"]
+ACCOUNT_ID = os.environ["MAILTRAP_ACCOUNT_ID"]
+INBOX_ID = os.environ["MAILTRAP_INBOX_ID"]
 
-client = mt.MailtrapClient(token=API_TOKEN, account_id=ACCOUNT_ID)
+client = mt.MailtrapClient(token=API_KEY, account_id=ACCOUNT_ID)
 messages_api = client.testing_api.messages
 
 

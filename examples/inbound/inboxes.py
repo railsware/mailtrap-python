@@ -1,11 +1,13 @@
+import os
+
 import mailtrap as mt
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.inbound import InboundInbox
 
-API_TOKEN = "YOUR_API_TOKEN"
-FOLDER_ID = 42
+API_KEY = os.environ["MAILTRAP_API_KEY"]
+FOLDER_ID = int(os.environ["MAILTRAP_INBOUND_FOLDER_ID"])
 
-client = mt.MailtrapClient(token=API_TOKEN)
+client = mt.MailtrapClient(token=API_KEY)
 inboxes_api = client.inbound_api.inboxes
 
 

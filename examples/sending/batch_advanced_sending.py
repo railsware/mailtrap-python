@@ -1,9 +1,10 @@
 import base64
+import os
 from pathlib import Path
 
 import mailtrap as mt
 
-API_TOKEN = "<YOUR_API_TOKEN>"
+API_KEY = os.environ["MAILTRAP_API_KEY"]
 
 
 class SendingType:
@@ -14,14 +15,14 @@ class SendingType:
 
 def get_client(type_: SendingType) -> mt.MailtrapClient:
     if type_ == SendingType.DEFAULT:
-        return mt.MailtrapClient(token=API_TOKEN)
+        return mt.MailtrapClient(token=API_KEY)
     elif type_ == SendingType.BULK:
-        return mt.MailtrapClient(token=API_TOKEN, bulk=True)
+        return mt.MailtrapClient(token=API_KEY, bulk=True)
     elif type_ == SendingType.SANDBOX:
         return mt.MailtrapClient(
-            token=API_TOKEN,
+            token=API_KEY,
             sandbox=True,
-            inbox_id="<YOUR_INBOX_ID>",
+            inbox_id=os.environ["MAILTRAP_INBOX_ID"],
         )
     raise ValueError(f"Invalid sending type: {type_}")
 

@@ -1,3 +1,5 @@
+import os
+
 import mailtrap as mt
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.inbound import InboundMessageDetails
@@ -5,10 +7,10 @@ from mailtrap.models.inbound import InboundMessagesListResponse
 from mailtrap.models.inbound import InboundSendResult
 from mailtrap.models.mail.address import Address
 
-API_TOKEN = "YOUR_API_TOKEN"
-INBOX_ID = 9
+API_KEY = os.environ["MAILTRAP_API_KEY"]
+INBOX_ID = int(os.environ["MAILTRAP_INBOUND_INBOX_ID"])
 
-client = mt.MailtrapClient(token=API_TOKEN)
+client = mt.MailtrapClient(token=API_KEY)
 messages_api = client.inbound_api.messages
 
 

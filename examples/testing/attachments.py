@@ -1,12 +1,14 @@
+import os
+
 import mailtrap as mt
 from mailtrap.models.attachments import Attachment
 
-API_TOKEN = "YOUR_API_TOKEN"
-ACCOUNT_ID = "YOUR_ACCOUNT_ID"
-INBOX_ID = "YOUR_INBOX_ID"
-MESSAGE_ID = "YOUR_MESSAGE_ID"
+API_KEY = os.environ["MAILTRAP_API_KEY"]
+ACCOUNT_ID = os.environ["MAILTRAP_ACCOUNT_ID"]
+INBOX_ID = os.environ["MAILTRAP_INBOX_ID"]
+MESSAGE_ID = os.environ["MAILTRAP_SANDBOX_MESSAGE_ID"]
 
-client = mt.MailtrapClient(token=API_TOKEN, account_id=ACCOUNT_ID)
+client = mt.MailtrapClient(token=API_KEY, account_id=ACCOUNT_ID)
 attachments_api = client.testing_api.attachments
 
 
