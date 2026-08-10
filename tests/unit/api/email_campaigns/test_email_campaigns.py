@@ -320,7 +320,9 @@ class TestEmailCampaignsApi:
                     name="Spring Sale",
                     domain_id=DOMAIN_ID,
                     from_local_part="news",
-                    template_attributes=CreateEmailCampaignTemplateAttributes(subject="Spring!"),
+                    template_attributes=CreateEmailCampaignTemplateAttributes(
+                        subject="Spring!"
+                    ),
                 )
             )
 
