@@ -36,12 +36,12 @@ def create_email_campaign() -> EmailCampaign:
             domain_id=DOMAIN_ID,
             from_display_name="Acme Marketing",
             from_local_part="news",
-            reply_to=mt.ReplyTo(
+            reply_to=mt.EmailCampaignReplyTo(
                 display_name="Acme Support",
                 local_part="support",
                 domain="acme.com",
             ),
-            template_attributes=mt.CreateTemplateAttributes(
+            template_attributes=mt.CreateEmailCampaignTemplateAttributes(
                 subject="Spring is here — 30% off"
             ),
         )
@@ -56,10 +56,10 @@ def update_email_campaign(email_campaign_id: int) -> EmailCampaign:
         campaign_params=mt.UpdateEmailCampaignParams(
             name="Spring Sale (updated)",
             delivery_mode="gradual",
-            delivery_options=mt.DeliveryOptions(emails_per_hour=1000),
+            delivery_options=mt.EmailCampaignDeliveryOptions(emails_per_hour=1000),
             contact_list_ids=[55, 56],
             contact_segment_ids=[12],
-            template_attributes=mt.TemplateAttributes(
+            template_attributes=mt.EmailCampaignTemplateAttributes(
                 subject="Spring is here — 30% off everything",
                 body_html=(
                     "<html><body>"

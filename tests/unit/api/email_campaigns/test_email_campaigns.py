@@ -12,14 +12,14 @@ from mailtrap.exceptions import APIError
 from mailtrap.http import HttpClient
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.email_campaigns import CreateEmailCampaignParams
-from mailtrap.models.email_campaigns import CreateTemplateAttributes
-from mailtrap.models.email_campaigns import DeliveryOptions
+from mailtrap.models.email_campaigns import CreateEmailCampaignTemplateAttributes
 from mailtrap.models.email_campaigns import EmailCampaign
+from mailtrap.models.email_campaigns import EmailCampaignDeliveryOptions
 from mailtrap.models.email_campaigns import EmailCampaignListResponse
+from mailtrap.models.email_campaigns import EmailCampaignReplyTo
 from mailtrap.models.email_campaigns import EmailCampaignStats
-from mailtrap.models.email_campaigns import ReplyTo
+from mailtrap.models.email_campaigns import EmailCampaignTemplateAttributes
 from mailtrap.models.email_campaigns import ScheduleEmailCampaignParams
-from mailtrap.models.email_campaigns import TemplateAttributes
 from mailtrap.models.email_campaigns import UpdateEmailCampaignParams
 from tests import conftest
 
@@ -320,7 +320,7 @@ class TestEmailCampaignsApi:
                     name="Spring Sale",
                     domain_id=DOMAIN_ID,
                     from_local_part="news",
-                    template_attributes=CreateTemplateAttributes(subject="Spring!"),
+                    template_attributes=CreateEmailCampaignTemplateAttributes(subject="Spring!"),
                 )
             )
 
@@ -339,11 +339,11 @@ class TestEmailCampaignsApi:
                 name="Spring Sale",
                 domain_id=DOMAIN_ID,
                 from_local_part="news",
-                template_attributes=CreateTemplateAttributes(
+                template_attributes=CreateEmailCampaignTemplateAttributes(
                     subject="Spring is here — 30% off"
                 ),
                 from_display_name="Acme Marketing",
-                reply_to=ReplyTo(
+                reply_to=EmailCampaignReplyTo(
                     display_name="Acme Support",
                     local_part="support",
                     domain="acme.com",
@@ -385,13 +385,13 @@ class TestEmailCampaignsApi:
         campaign = client.update(
             CAMPAIGN_ID,
             UpdateEmailCampaignParams(
-                template_attributes=TemplateAttributes(
+                template_attributes=EmailCampaignTemplateAttributes(
                     subject="New subject",
                     body_html="<html><body>Hi</body></html>",
                     merge_tags=["first_name"],
                 ),
                 delivery_mode="gradual",
-                delivery_options=DeliveryOptions(emails_per_hour=1000),
+                delivery_options=EmailCampaignDeliveryOptions(emails_per_hour=1000),
                 contact_segment_ids=[12],
             ),
         )

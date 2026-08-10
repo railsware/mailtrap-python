@@ -9,7 +9,7 @@ from mailtrap.models.common import RequestParams
 
 
 @dataclass
-class ReplyTo:
+class EmailCampaignReplyTo:
     """Reply-To address parts."""
 
     display_name: Optional[str] = None
@@ -18,14 +18,14 @@ class ReplyTo:
 
 
 @dataclass
-class DeliveryOptions:
+class EmailCampaignDeliveryOptions:
     """Delivery throttling options. Applies when ``delivery_mode`` is ``gradual``."""
 
     emails_per_hour: Optional[int] = None
 
 
 @dataclass
-class TemplateAttributes:
+class EmailCampaignTemplateAttributes:
     """
     Inline email template — the campaign's subject and design. On update only
     the sub-fields you provide change; ``merge_tags`` is replaced as a whole
@@ -39,7 +39,7 @@ class TemplateAttributes:
 
 
 @dataclass
-class CreateTemplateAttributes:
+class CreateEmailCampaignTemplateAttributes:
     """
     Inline email template for creating a campaign — ``subject`` is required;
     the design fields are optional until the campaign is scheduled or started.
@@ -92,7 +92,7 @@ class CurrentStateMetadata:
 
 
 @dataclass
-class CampaignTemplate:
+class EmailCampaignTemplate:
     """
     The campaign's template as returned by the API. ``body_html`` and
     ``body_text`` are returned only on single-campaign responses; the list
@@ -116,7 +116,7 @@ class EmailCampaign:
     name: Optional[str] = None
     from_local_part: Optional[str] = None
     from_display_name: Optional[str] = None
-    reply_to: Optional[ReplyTo] = None
+    reply_to: Optional[EmailCampaignReplyTo] = None
     current_state: Optional[str] = None
     current_state_metadata: Optional[CurrentStateMetadata] = None
     created_at: Optional[str] = None
@@ -127,8 +127,8 @@ class EmailCampaign:
     contact_list_ids: list[int] = Field(default_factory=list)
     contact_segment_ids: list[int] = Field(default_factory=list)
     delivery_mode: Optional[str] = None
-    delivery_options: Optional[DeliveryOptions] = None
-    template: Optional[CampaignTemplate] = None
+    delivery_options: Optional[EmailCampaignDeliveryOptions] = None
+    template: Optional[EmailCampaignTemplate] = None
 
 
 @dataclass
@@ -196,11 +196,11 @@ class CreateEmailCampaignParams(RequestParams):
     name: str
     domain_id: int
     from_local_part: str
-    template_attributes: CreateTemplateAttributes
+    template_attributes: CreateEmailCampaignTemplateAttributes
     from_display_name: Optional[str] = None
-    reply_to: Optional[ReplyTo] = None
+    reply_to: Optional[EmailCampaignReplyTo] = None
     delivery_mode: Optional[str] = None
-    delivery_options: Optional[DeliveryOptions] = None
+    delivery_options: Optional[EmailCampaignDeliveryOptions] = None
     contact_list_ids: Optional[list[int]] = None
     contact_segment_ids: Optional[list[int]] = None
 
@@ -216,10 +216,10 @@ class UpdateEmailCampaignParams(RequestParams):
     domain_id: Optional[int] = None
     from_local_part: Optional[str] = None
     from_display_name: Optional[str] = None
-    reply_to: Optional[ReplyTo] = None
-    template_attributes: Optional[TemplateAttributes] = None
+    reply_to: Optional[EmailCampaignReplyTo] = None
+    template_attributes: Optional[EmailCampaignTemplateAttributes] = None
     delivery_mode: Optional[str] = None
-    delivery_options: Optional[DeliveryOptions] = None
+    delivery_options: Optional[EmailCampaignDeliveryOptions] = None
     contact_list_ids: Optional[list[int]] = None
     contact_segment_ids: Optional[list[int]] = None
 
