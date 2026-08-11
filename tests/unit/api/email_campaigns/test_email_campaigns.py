@@ -15,9 +15,11 @@ from mailtrap.models.email_campaigns import CreateEmailCampaignParams
 from mailtrap.models.email_campaigns import CreateEmailCampaignTemplateAttributes
 from mailtrap.models.email_campaigns import EmailCampaign
 from mailtrap.models.email_campaigns import EmailCampaignDeliveryOptions
+from mailtrap.models.email_campaigns import EmailCampaignListParams
 from mailtrap.models.email_campaigns import EmailCampaignListResponse
 from mailtrap.models.email_campaigns import EmailCampaignReplyTo
 from mailtrap.models.email_campaigns import EmailCampaignStats
+from mailtrap.models.email_campaigns import EmailCampaignStatsParams
 from mailtrap.models.email_campaigns import EmailCampaignTemplateAttributes
 from mailtrap.models.email_campaigns import ScheduleEmailCampaignParams
 from mailtrap.models.email_campaigns import UpdateEmailCampaignParams
@@ -188,7 +190,7 @@ class TestEmailCampaignsApi:
     ) -> None:
         responses.get(BASE_CAMPAIGNS_URL, json={"data": [], "pagination": {}}, status=200)
 
-        client.get_list(per_page=25, search="Spring", token=2)
+        client.get_list(EmailCampaignListParams(per_page=25, search="Spring", token=2))
 
         query = parse_qs(urlparse(responses.calls[0].request.url).query)
         # The name filter must serialize to `search`, not `name`.
@@ -647,7 +649,10 @@ class TestEmailCampaignsApi:
             status=200,
         )
 
-        client.get_stats(CAMPAIGN_ID, start_date="2026-05-01", end_date="2026-05-31")
+        client.get_stats(
+            CAMPAIGN_ID,
+            EmailCampaignStatsParams(start_date="2026-05-01", end_date="2026-05-31"),
+        )
 
         query = parse_qs(urlparse(responses.calls[0].request.url).query)
         assert query["start_date"] == ["2026-05-01"]

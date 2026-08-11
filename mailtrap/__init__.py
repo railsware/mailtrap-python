@@ -21,9 +21,11 @@ from .models.email_campaigns import CreateEmailCampaignParams
 from .models.email_campaigns import CreateEmailCampaignTemplateAttributes
 from .models.email_campaigns import EmailCampaign
 from .models.email_campaigns import EmailCampaignDeliveryOptions
+from .models.email_campaigns import EmailCampaignListParams
 from .models.email_campaigns import EmailCampaignListResponse
 from .models.email_campaigns import EmailCampaignReplyTo
 from .models.email_campaigns import EmailCampaignStats
+from .models.email_campaigns import EmailCampaignStatsParams
 from .models.email_campaigns import EmailCampaignTemplate
 from .models.email_campaigns import EmailCampaignTemplateAttributes
 from .models.email_campaigns import ScheduleEmailCampaignParams

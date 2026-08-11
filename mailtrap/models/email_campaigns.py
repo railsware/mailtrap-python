@@ -5,6 +5,7 @@ from typing import Optional
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
+from mailtrap.models.common import Pagination
 from mailtrap.models.common import RequestParams
 
 
@@ -129,19 +130,6 @@ class EmailCampaign:
     delivery_mode: Optional[str] = None
     delivery_options: Optional[EmailCampaignDeliveryOptions] = None
     template: Optional[EmailCampaignTemplate] = None
-
-
-@dataclass
-class Pagination:
-    """Page-token pagination metadata."""
-
-    token: Optional[int] = None
-    prev_token: Optional[int] = None
-    next_token: Optional[int] = None
-    first_url: Optional[str] = None
-    prev_url: Optional[str] = None
-    current_url: Optional[str] = None
-    next_url: Optional[str] = None
 
 
 @dataclass

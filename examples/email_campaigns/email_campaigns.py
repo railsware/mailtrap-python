@@ -5,8 +5,10 @@ from datetime import timezone
 import mailtrap as mt
 from mailtrap.models.common import DeletedObject
 from mailtrap.models.email_campaigns import EmailCampaign
+from mailtrap.models.email_campaigns import EmailCampaignListParams
 from mailtrap.models.email_campaigns import EmailCampaignListResponse
 from mailtrap.models.email_campaigns import EmailCampaignStats
+from mailtrap.models.email_campaigns import EmailCampaignStatsParams
 
 API_TOKEN = "YOUR_API_TOKEN"
 DOMAIN_ID = 4321
@@ -19,7 +21,9 @@ email_campaigns_api = client.email_campaigns_api.email_campaigns
 def list_email_campaigns() -> EmailCampaignListResponse:
     # `search` filters by name; `token` is the page number (page-token
     # pagination); `per_page` caps at 100 (default 50).
-    return email_campaigns_api.get_list(per_page=50, search="Spring", token=1)
+    return email_campaigns_api.get_list(
+        EmailCampaignListParams(per_page=50, search="Spring", token=1)
+    )
 
 
 def get_email_campaign(email_campaign_id: int) -> EmailCampaign:
@@ -109,8 +113,10 @@ def get_email_campaign_stats(email_campaign_id: int) -> EmailCampaignStats:
     today = datetime.now(timezone.utc).date()
     return email_campaigns_api.get_stats(
         email_campaign_id=email_campaign_id,
-        start_date=(today - timedelta(days=30)).isoformat(),
-        end_date=today.isoformat(),
+        params=EmailCampaignStatsParams(
+            start_date=(today - timedelta(days=30)).isoformat(),
+            end_date=today.isoformat(),
+        ),
     )
 
 

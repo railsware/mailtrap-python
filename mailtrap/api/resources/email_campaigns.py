@@ -19,20 +19,15 @@ class EmailCampaignsApi:
         self._client = client
 
     def get_list(
-        self,
-        per_page: Optional[int] = None,
-        search: Optional[str] = None,
-        token: Optional[int] = None,
+        self, params: Optional[EmailCampaignListParams] = None
     ) -> EmailCampaignListResponse:
         """
-        List email campaigns for the account, newest first. ``search`` filters
-        by name, ``per_page`` sets the page size (max 100, default 50), and
-        ``token`` is the page number to retrieve (default 1).
+        List email campaigns for the account, newest first. ``params`` filters
+        by name and paginates the result; omit it for the first page with API
+        defaults.
         """
-        params = EmailCampaignListParams(
-            per_page=per_page, search=search, token=token
-        ).api_query_params
-        response = self._client.get(self._api_path(), params=params or None)
+        query_params = params.api_query_params if params else None
+        response = self._client.get(self._api_path(), params=query_params or None)
         return EmailCampaignListResponse(**response)
 
     def get_by_id(self, email_campaign_id: int) -> EmailCampaign:
@@ -112,20 +107,17 @@ class EmailCampaignsApi:
     def get_stats(
         self,
         email_campaign_id: int,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        params: Optional[EmailCampaignStatsParams] = None,
     ) -> EmailCampaignStats:
         """
         Get aggregated performance statistics for a single campaign. If the
         campaign has never been started, all counts and rates are ``0``.
-        ``start_date``/``end_date`` (``YYYY-MM-DD``) narrow the aggregation
-        window; it defaults to the whole period since the last start.
+        ``params`` narrows the aggregation window; omit it to cover the whole
+        period since the campaign was last started.
         """
-        params = EmailCampaignStatsParams(
-            start_date=start_date, end_date=end_date
-        ).api_query_params
+        query_params = params.api_query_params if params else None
         response = self._client.get(
-            f"{self._api_path(email_campaign_id)}/stats", params=params or None
+            f"{self._api_path(email_campaign_id)}/stats", params=query_params or None
         )
         return EmailCampaignStatsResponse(**response).data
 

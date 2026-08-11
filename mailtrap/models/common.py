@@ -1,4 +1,5 @@
 from typing import Any
+from typing import Optional
 from typing import TypeVar
 from typing import Union
 from typing import cast
@@ -32,3 +33,16 @@ class RequestParams:
 @dataclass
 class DeletedObject:
     id: Union[int, str]
+
+
+@dataclass
+class Pagination:
+    """Page-token pagination metadata returned with a paginated list response."""
+
+    token: Optional[int] = None
+    prev_token: Optional[int] = None
+    next_token: Optional[int] = None
+    first_url: Optional[str] = None
+    prev_url: Optional[str] = None
+    current_url: Optional[str] = None
+    next_url: Optional[str] = None
