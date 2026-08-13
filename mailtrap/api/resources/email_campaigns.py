@@ -61,7 +61,8 @@ class EmailCampaignsApi:
 
     def delete(self, email_campaign_id: int) -> DeletedObject:
         """
-        Delete an email campaign. The campaign must not be in a sending state.
+        Delete an email campaign. Only a campaign in the ``draft`` state can be
+        deleted.
         """
         self._client.delete(self._api_path(email_campaign_id))
         return DeletedObject(email_campaign_id)

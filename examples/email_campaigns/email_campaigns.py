@@ -151,5 +151,9 @@ if __name__ == "__main__":
     stats = get_email_campaign_stats(created.id)
     print(stats)
 
-    deleted = delete_email_campaign(created.id)
+    # Only a campaign in the `draft` state can be deleted, and a campaign that
+    # has been started can never return to `draft` — so delete a fresh draft
+    # rather than the one started above.
+    throwaway = create_email_campaign()
+    deleted = delete_email_campaign(throwaway.id)
     print(deleted)
