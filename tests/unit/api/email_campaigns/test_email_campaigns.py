@@ -27,7 +27,6 @@ from tests import conftest
 
 CAMPAIGN_ID = 4567
 DOMAIN_ID = 4321
-# The endpoint is token-scoped, NOT under /api/accounts/{account_id}.
 BASE_CAMPAIGNS_URL = f"https://{GENERAL_HOST}/api/email_campaigns"
 
 
