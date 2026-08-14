@@ -63,6 +63,11 @@ class TestMailtrapClient:
 
         assert "`account_id` is required for Webhooks API" in str(exc_info.value)
 
+    def test_email_campaigns_api_does_not_require_account_id(self) -> None:
+        client = self.get_client()
+
+        assert client.email_campaigns_api.email_campaigns is not None
+
     @pytest.mark.parametrize(
         "arguments, expected_url",
         [

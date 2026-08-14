@@ -250,6 +250,9 @@ The same situation applies to both `client.batch_send()` and `client.sending_api
 - Messages (list/get/delete + reply/reply_all/forward) – [`inbound/messages.py`](examples/inbound/messages.py)
 - Threads (list/get/delete) – [`inbound/threads.py`](examples/inbound/threads.py)
 
+### Email Campaigns API:
+- Email Campaigns (list, create, get, update, delete, lifecycle actions, stats) – [`email_campaigns/email_campaigns.py`](examples/email_campaigns/email_campaigns.py)
+
 ### Webhooks API:
 - Webhooks management – [`webhooks/webhooks.py`](examples/webhooks/webhooks.py)
 - Verifying webhook signatures – [`webhooks/verify_signature.py`](examples/webhooks/verify_signature.py)

@@ -7,6 +7,7 @@ from typing import cast
 from pydantic import TypeAdapter
 
 from mailtrap.api.contacts import ContactsBaseApi
+from mailtrap.api.email_campaigns import EmailCampaignsBaseApi
 from mailtrap.api.email_logs import EmailLogsBaseApi
 from mailtrap.api.general import GeneralApi
 from mailtrap.api.inbound import InboundBaseApi
@@ -121,6 +122,14 @@ class MailtrapClient:
         self._validate_account_id("Sending Domains API")
         return SendingDomainsBaseApi(
             account_id=cast(str, self.account_id),
+            client=HttpClient(host=GENERAL_HOST, headers=self.headers),
+        )
+
+    @property
+    def email_campaigns_api(self) -> EmailCampaignsBaseApi:
+        # Token-scoped (`/api/email_campaigns`) — the account is resolved
+        # server-side from the token, so no `account_id` is required.
+        return EmailCampaignsBaseApi(
             client=HttpClient(host=GENERAL_HOST, headers=self.headers),
         )
 
