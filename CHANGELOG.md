@@ -1,3 +1,11 @@
+## [2.8.0] - 2026-08-14
+
+## What's Changed
+* MT-22401: Add Email Campaigns API by @Rabsztok in https://github.com/mailtrap/mailtrap-python/pull/74
+
+
+**Full Changelog**: https://github.com/mailtrap/mailtrap-python/compare/v2.7.0...v2.8.0
+
 ## [2.7.0] - 2026-08-04
 
 ## What's Changed
