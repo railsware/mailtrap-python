@@ -16,8 +16,8 @@ class UnsetType:
     """
     Sentinel type for request fields that should be omitted from the payload.
 
-    api_data drops fields whose value is UNSET, keeping an omitted field
-    distinct from an explicit None value.
+    api_data drops fields whose value is UNSET at any depth, keeping an
+    omitted field distinct from an explicit None value.
     """
 
     _instance: Optional["UnsetType"] = None
@@ -49,6 +49,18 @@ class UnsetType:
 UNSET = UnsetType()
 
 
+def _drop_unset(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {
+            key: _drop_unset(item)
+            for key, item in value.items()
+            if not isinstance(item, UnsetType)
+        }
+    if isinstance(value, list):
+        return [_drop_unset(item) for item in value if not isinstance(item, UnsetType)]
+    return value
+
+
 @dataclass
 class RequestParams:
     @property
@@ -57,9 +69,7 @@ class RequestParams:
             dict[str, Any],
             TypeAdapter(type(self)).dump_python(self, by_alias=True, exclude_none=True),
         )
-        return {
-            key: value for key, value in data.items() if not isinstance(value, UnsetType)
-        }
+        return cast(dict[str, Any], _drop_unset(data))
 
     @property
     def api_query_params(self: T) -> dict[str, Any]:
