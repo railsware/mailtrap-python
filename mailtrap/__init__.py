@@ -8,6 +8,8 @@ from .exceptions import MailtrapError
 from .models.accounts import AccountAccessFilterParams
 from .models.api_tokens import ApiTokenResource
 from .models.api_tokens import CreateApiTokenParams
+from .models.company_info import CreateCompanyInfoParams
+from .models.company_info import UpdateCompanyInfoParams
 from .models.contacts import ContactEventParams
 from .models.contacts import ContactExportFilter
 from .models.contacts import ContactListParams
@@ -57,6 +59,7 @@ from .models.permissions import PermissionResourceParams
 from .models.projects import ProjectParams
 from .models.sending_domains import CreateSendingDomainParams
 from .models.sending_domains import SendSetupInstructionsParams
+from .models.sending_domains import UpdateSendingDomainParams
 from .models.stats import StatsFilterParams
 from .models.templates import CreateEmailTemplateParams
 from .models.templates import UpdateEmailTemplateParams

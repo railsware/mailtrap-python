@@ -6,6 +6,7 @@ from mailtrap.models.sending_domains import CreateSendingDomainParams
 from mailtrap.models.sending_domains import SendingDomain
 from mailtrap.models.sending_domains import SendSetupInstructionsParams
 from mailtrap.models.sending_domains import SendSetupInstructionsResponse
+from mailtrap.models.sending_domains import UpdateSendingDomainParams
 
 
 class SendingDomainsApi:
@@ -36,6 +37,19 @@ class SendingDomainsApi:
         """
         response = self._client.post(
             self._api_path(), json={"sending_domain": domain_params.api_data}
+        )
+        return SendingDomain(**response)
+
+    def update(
+        self, sending_domain_id: int, domain_params: UpdateSendingDomainParams
+    ) -> SendingDomain:
+        """
+        Update configuration settings for a sending domain. Only the fields
+        supplied in `domain_params` are sent to the API.
+        """
+        response = self._client.patch(
+            self._api_path(sending_domain_id),
+            json={"sending_domain": domain_params.api_data},
         )
         return SendingDomain(**response)
 
