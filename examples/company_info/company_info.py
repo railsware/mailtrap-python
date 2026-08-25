@@ -4,11 +4,10 @@ import mailtrap as mt
 from mailtrap.models.company_info import CompanyInfo
 
 API_KEY = os.environ["MAILTRAP_API_KEY"]
-ACCOUNT_ID = os.environ["MAILTRAP_ACCOUNT_ID"]
 DOMAIN_ID = int(os.environ["MAILTRAP_DOMAIN_ID"])
 
-client = mt.MailtrapClient(token=API_KEY, account_id=ACCOUNT_ID)
-company_info_api = client.sending_domains_api.company_info
+client = mt.MailtrapClient(token=API_KEY)
+company_info_api = client.company_info_api.company_info
 
 
 def get_company_info(domain_id: int) -> CompanyInfo:

@@ -13,17 +13,13 @@ from mailtrap.models.company_info import CreateCompanyInfoParams
 from mailtrap.models.company_info import UpdateCompanyInfoParams
 from tests import conftest
 
-ACCOUNT_ID = "1234567"
 DOMAIN_ID = 432
-COMPANY_INFO_URL = (
-    f"https://{GENERAL_HOST}/api/accounts/{ACCOUNT_ID}"
-    f"/sending_domains/{DOMAIN_ID}/company_info"
-)
+COMPANY_INFO_URL = f"https://{GENERAL_HOST}/api/domains/{DOMAIN_ID}/company_info"
 
 
 @pytest.fixture
 def company_info_api() -> CompanyInfoApi:
-    return CompanyInfoApi(account_id=ACCOUNT_ID, client=HttpClient(GENERAL_HOST))
+    return CompanyInfoApi(client=HttpClient(GENERAL_HOST))
 
 
 @pytest.fixture

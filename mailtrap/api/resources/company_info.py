@@ -6,8 +6,7 @@ from mailtrap.models.company_info import UpdateCompanyInfoParams
 
 
 class CompanyInfoApi:
-    def __init__(self, client: HttpClient, account_id: str) -> None:
-        self._account_id = account_id
+    def __init__(self, client: HttpClient) -> None:
         self._client = client
 
     def get(self, sending_domain_id: int) -> CompanyInfo:
@@ -43,8 +42,6 @@ class CompanyInfoApi:
         )
         return CompanyInfoResponse(**response).data
 
-    def _api_path(self, sending_domain_id: int) -> str:
-        return (
-            f"/api/accounts/{self._account_id}"
-            f"/sending_domains/{sending_domain_id}/company_info"
-        )
+    @staticmethod
+    def _api_path(sending_domain_id: int) -> str:
+        return f"/api/domains/{sending_domain_id}/company_info"

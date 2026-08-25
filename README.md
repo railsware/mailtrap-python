@@ -243,7 +243,7 @@ The same situation applies to both `client.batch_send()` and `client.sending_api
 
 ### Sending Domains API:
 - Sending Domains – [`sending_domains/sending_domains.py`](examples/sending_domains/sending_domains.py)
-- Sending Domain Company Info – [`sending_domains/company_info.py`](examples/sending_domains/company_info.py)
+- Sending Domain Company Info – [`company_info/company_info.py`](examples/company_info/company_info.py)
 
 ### Inbound Email API:
 - Folders management – [`inbound/folders.py`](examples/inbound/folders.py)
