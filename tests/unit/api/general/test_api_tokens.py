@@ -416,6 +416,20 @@ class TestApiTokensApi:
         assert responses.calls[0].request.body is None
 
     @responses.activate
+    def test_reset_should_send_empty_body_for_params_without_expires_at(
+        self, client: ApiTokensApi, sample_api_token_dict: dict
+    ) -> None:
+        responses.post(
+            f"{BASE_API_TOKENS_URL}/{API_TOKEN_ID}/reset",
+            json={**sample_api_token_dict, "token": "new-token-value"},
+            status=200,
+        )
+
+        client.reset(ACCOUNT_ID, API_TOKEN_ID, token_params=ResetApiTokenParams())
+
+        assert responses.calls[0].request.body == b"{}"
+
+    @responses.activate
     def test_reset_should_send_null_expires_at_for_never_expiring_token(
         self, client: ApiTokensApi, sample_api_token_dict: dict
     ) -> None:
