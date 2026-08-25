@@ -1,4 +1,7 @@
 import os
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 
 import mailtrap as mt
 from mailtrap.models.api_tokens import ApiToken
@@ -10,6 +13,12 @@ ACCOUNT_ID = os.environ["MAILTRAP_ACCOUNT_ID"]
 
 client = mt.MailtrapClient(token=API_KEY)
 api_tokens_api = client.general_api.api_tokens
+
+
+def one_year_from_now() -> str:
+    return (datetime.now(timezone.utc) + timedelta(days=365)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
 
 
 def list_api_tokens(account_id: int) -> list[ApiToken]:
@@ -29,7 +38,7 @@ def create_api_token(account_id: int) -> ApiTokenWithToken:
         account_id=account_id,
         token_params=mt.CreateApiTokenParams(
             name="My API Token",
-            expires_at="2027-06-01T00:00:00Z",
+            expires_at=one_year_from_now(),
             resources=[
                 mt.ApiTokenResource(
                     resource_type="account",
@@ -55,7 +64,7 @@ def reset_api_token_with_expiration(
     return api_tokens_api.reset(
         account_id=account_id,
         api_token_id=api_token_id,
-        token_params=mt.ResetApiTokenParams(expires_at="2027-06-01T00:00:00Z"),
+        token_params=mt.ResetApiTokenParams(expires_at=one_year_from_now()),
     )
 
 
