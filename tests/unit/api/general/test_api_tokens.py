@@ -178,11 +178,6 @@ class TestApiTokensApi:
                 conftest.FORBIDDEN_RESPONSE,
                 conftest.FORBIDDEN_ERROR_MESSAGE,
             ),
-            (
-                conftest.VALIDATION_ERRORS_STATUS_CODE,
-                {"errors": {"expires_at": ["must be in the future"]}},
-                "expires_at: must be in the future",
-            ),
         ],
     )
     @responses.activate
@@ -294,6 +289,28 @@ class TestApiTokensApi:
         }
         assert token.expires_at == "2027-06-01T00:00:00Z"
 
+    @responses.activate
+    def test_create_should_send_invalid_expires_at_and_raise_server_error(
+        self, client: ApiTokensApi
+    ) -> None:
+        responses.post(
+            BASE_API_TOKENS_URL,
+            json={"errors": {"expires_at": ["must be in the future"]}},
+            status=conftest.VALIDATION_ERRORS_STATUS_CODE,
+        )
+
+        with pytest.raises(APIError) as exc_info:
+            client.create(
+                ACCOUNT_ID,
+                CreateApiTokenParams(
+                    name="My API Token", expires_at="2020-01-01T00:00:00Z"
+                ),
+            )
+
+        body = json.loads(responses.calls[0].request.body)
+        assert body["expires_at"] == "2020-01-01T00:00:00Z"
+        assert "expires_at: must be in the future" in str(exc_info.value)
+
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
         [
@@ -357,11 +374,6 @@ class TestApiTokensApi:
                 conftest.NOT_FOUND_STATUS_CODE,
                 conftest.NOT_FOUND_RESPONSE,
                 conftest.NOT_FOUND_ERROR_MESSAGE,
-            ),
-            (
-                conftest.VALIDATION_ERRORS_STATUS_CODE,
-                {"errors": {"expires_at": ["must be in the future"]}},
-                "expires_at: must be in the future",
             ),
         ],
     )
@@ -443,3 +455,24 @@ class TestApiTokensApi:
         body = json.loads(responses.calls[0].request.body)
         assert body == {"expires_at": "2027-06-01T00:00:00Z"}
         assert token.expires_at == "2027-06-01T00:00:00Z"
+
+    @responses.activate
+    def test_reset_should_send_invalid_expires_at_and_raise_server_error(
+        self, client: ApiTokensApi
+    ) -> None:
+        responses.post(
+            f"{BASE_API_TOKENS_URL}/{API_TOKEN_ID}/reset",
+            json={"errors": {"expires_at": ["must be in the future"]}},
+            status=conftest.VALIDATION_ERRORS_STATUS_CODE,
+        )
+
+        with pytest.raises(APIError) as exc_info:
+            client.reset(
+                ACCOUNT_ID,
+                API_TOKEN_ID,
+                token_params=ResetApiTokenParams(expires_at="2020-01-01T00:00:00Z"),
+            )
+
+        body = json.loads(responses.calls[0].request.body)
+        assert body == {"expires_at": "2020-01-01T00:00:00Z"}
+        assert "expires_at: must be in the future" in str(exc_info.value)
