@@ -59,7 +59,7 @@ class ApiTokensApi:
         """
         Expire the requested token and create a new token with the same
         permissions. The full new token value is returned once — store it
-        securely. Only tokens that have not already been reset can be reset.
+        securely. Tokens that have already expired cannot be reset.
 
         expires_at is an optional expiration of the new token as an ISO 8601
         date-time. Omit token_params or expires_at for the server default
