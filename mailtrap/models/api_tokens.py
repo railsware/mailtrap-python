@@ -35,8 +35,8 @@ class ApiTokenWithToken(ApiToken):
 @dataclass
 class CreateApiTokenParams(RequestParams):
     name: str
-    expires_at: Union[str, None, UnsetType] = UNSET
     resources: list[ApiTokenResource] = Field(default_factory=list)
+    expires_at: Union[str, None, UnsetType] = UNSET
 
     @property
     def api_data(self) -> dict[str, Any]:
