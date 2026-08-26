@@ -13,7 +13,6 @@ from mailtrap.models.email_campaigns import EmailCampaignStatsParams
 API_TOKEN = "YOUR_API_TOKEN"
 DOMAIN_ID = 4321
 
-# The Email Campaigns API is token-scoped — no `account_id` is needed.
 client = mt.MailtrapClient(token=API_TOKEN)
 email_campaigns_api = client.email_campaigns_api.email_campaigns
 

@@ -127,8 +127,6 @@ class EmailCampaignsApi:
         return EmailCampaignResponse(**response).data
 
     def _api_path(self, email_campaign_id: Optional[int] = None) -> str:
-        # Token-scoped: the account is resolved from the API token server-side,
-        # so the path takes no account id.
         path = "/api/email_campaigns"
         if email_campaign_id is not None:
             return f"{path}/{email_campaign_id}"

@@ -134,8 +134,6 @@ class MailtrapClient:
 
     @property
     def email_campaigns_api(self) -> EmailCampaignsBaseApi:
-        # Token-scoped (`/api/email_campaigns`) — the account is resolved
-        # server-side from the token, so no `account_id` is required.
         return EmailCampaignsBaseApi(
             client=HttpClient(host=GENERAL_HOST, headers=self.headers),
         )
