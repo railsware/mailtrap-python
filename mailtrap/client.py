@@ -19,6 +19,7 @@ from mailtrap.api.sending_domains import SendingDomainsBaseApi
 from mailtrap.api.suppressions import SuppressionsBaseApi
 from mailtrap.api.templates import EmailTemplatesApi
 from mailtrap.api.testing import TestingApi
+from mailtrap.api.tracking_opt_outs import TrackingOptOutsBaseApi
 from mailtrap.api.webhooks import WebhooksBaseApi
 from mailtrap.config import BULK_HOST
 from mailtrap.config import GENERAL_HOST
@@ -123,6 +124,12 @@ class MailtrapClient:
         self._validate_account_id("Sending Domains API")
         return SendingDomainsBaseApi(
             account_id=cast(str, self.account_id),
+            client=HttpClient(host=GENERAL_HOST, headers=self.headers),
+        )
+
+    @property
+    def tracking_opt_outs_api(self) -> TrackingOptOutsBaseApi:
+        return TrackingOptOutsBaseApi(
             client=HttpClient(host=GENERAL_HOST, headers=self.headers),
         )
 

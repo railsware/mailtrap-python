@@ -15,11 +15,23 @@ def list_suppressions(email: Optional[str] = None) -> list[Suppression]:
     return suppressions_api.get_list(email)
 
 
+def create_suppression() -> Suppression:
+    params = mt.CreateSuppressionParams(
+        email="recipient@example.com",
+        domain_id=12345,
+        sending_stream="transactional",
+    )
+    return suppressions_api.create(params)
+
+
 def delete_suppression(suppression_id: str) -> Suppression:
     return suppressions_api.delete(suppression_id)
 
 
 if __name__ == "__main__":
+    created = create_suppression()
+    print(created)
+
     suppressions = list_suppressions()
     print(suppressions)
     if suppressions:

@@ -259,7 +259,8 @@ The same situation applies to both `client.batch_send()` and `client.sending_api
 - Verifying webhook signatures – [`webhooks/verify_signature.py`](examples/webhooks/verify_signature.py)
 
 ### Suppressions API:
-- Suppressions (find & delete) – [`suppressions/suppressions.py`](examples/suppressions/suppressions.py)
+- Suppressions (create, find & delete) – [`suppressions/suppressions.py`](examples/suppressions/suppressions.py)
+- Tracking Opt-outs (list, create & delete) – [`tracking_opt_outs/tracking_opt_outs.py`](examples/tracking_opt_outs/tracking_opt_outs.py)
 
 ### Stats API:
 - Sending stats – [`stats/stats.py`](examples/stats/stats.py)
