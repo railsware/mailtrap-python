@@ -295,7 +295,7 @@ class TestApiTokensApi:
     ) -> None:
         responses.post(
             BASE_API_TOKENS_URL,
-            json={"errors": {"expires_at": ["must be in the future"]}},
+            json={"errors": {"base": ["Expiration date must be in the future"]}},
             status=conftest.VALIDATION_ERRORS_STATUS_CODE,
         )
 
@@ -309,7 +309,7 @@ class TestApiTokensApi:
 
         body = json.loads(responses.calls[0].request.body)
         assert body["expires_at"] == "2020-01-01T00:00:00Z"
-        assert "expires_at: must be in the future" in str(exc_info.value)
+        assert "base: Expiration date must be in the future" in str(exc_info.value)
 
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",
@@ -476,7 +476,7 @@ class TestApiTokensApi:
     ) -> None:
         responses.post(
             f"{BASE_API_TOKENS_URL}/{API_TOKEN_ID}/reset",
-            json={"errors": {"expires_at": ["must be in the future"]}},
+            json={"errors": {"base": ["Expiration date must be in the future"]}},
             status=conftest.VALIDATION_ERRORS_STATUS_CODE,
         )
 
@@ -489,4 +489,4 @@ class TestApiTokensApi:
 
         body = json.loads(responses.calls[0].request.body)
         assert body == {"expires_at": "2020-01-01T00:00:00Z"}
-        assert "expires_at: must be in the future" in str(exc_info.value)
+        assert "base: Expiration date must be in the future" in str(exc_info.value)
