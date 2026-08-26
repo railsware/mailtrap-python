@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import pytest
@@ -12,6 +13,7 @@ from mailtrap.models.sending_domains import CreateSendingDomainParams
 from mailtrap.models.sending_domains import SendingDomain
 from mailtrap.models.sending_domains import SendSetupInstructionsParams
 from mailtrap.models.sending_domains import SendSetupInstructionsResponse
+from mailtrap.models.sending_domains import UpdateSendingDomainParams
 from tests import conftest
 
 ACCOUNT_ID = "1234567"
@@ -231,6 +233,109 @@ class TestSendingDomainsApi:
         assert isinstance(domain, SendingDomain)
         assert domain.id == DOMAIN_ID
         assert domain.domain_name == "example.com"
+
+    @pytest.mark.parametrize(
+        "status_code,response_json,expected_error_message",
+        [
+            (
+                conftest.UNAUTHORIZED_STATUS_CODE,
+                conftest.UNAUTHORIZED_RESPONSE,
+                conftest.UNAUTHORIZED_ERROR_MESSAGE,
+            ),
+            (
+                conftest.FORBIDDEN_STATUS_CODE,
+                conftest.FORBIDDEN_RESPONSE,
+                conftest.FORBIDDEN_ERROR_MESSAGE,
+            ),
+            (
+                conftest.NOT_FOUND_STATUS_CODE,
+                conftest.NOT_FOUND_RESPONSE,
+                conftest.NOT_FOUND_ERROR_MESSAGE,
+            ),
+            (
+                conftest.VALIDATION_ERRORS_STATUS_CODE,
+                {"errors": "Tracking opt out is invalid"},
+                "Tracking opt out is invalid",
+            ),
+            (
+                conftest.INTERNAL_SERVER_ERROR_STATUS_CODE,
+                conftest.INTERNAL_SERVER_ERROR_RESPONSE,
+                conftest.INTERNAL_SERVER_ERROR_MESSAGE,
+            ),
+        ],
+    )
+    @responses.activate
+    def test_update_sending_domain_should_raise_api_errors(
+        self,
+        sending_domains_api: SendingDomainsApi,
+        status_code: int,
+        response_json: dict,
+        expected_error_message: str,
+    ) -> None:
+        responses.patch(
+            f"{BASE_SENDING_DOMAINS_URL}/{DOMAIN_ID}",
+            status=status_code,
+            json=response_json,
+        )
+
+        with pytest.raises(APIError) as exc_info:
+            params = UpdateSendingDomainParams(open_tracking_enabled=True)
+            sending_domains_api.update(DOMAIN_ID, params)
+
+        assert expected_error_message in str(exc_info.value)
+
+    @responses.activate
+    def test_update_sending_domain_should_return_updated_domain(
+        self, sending_domains_api: SendingDomainsApi, sample_sending_domain_dict: dict
+    ) -> None:
+        sample_sending_domain_dict["tracking_opt_out_enabled"] = True
+        sample_sending_domain_dict["auto_unsubscribe_link_enabled"] = False
+        responses.patch(
+            f"{BASE_SENDING_DOMAINS_URL}/{DOMAIN_ID}",
+            json=sample_sending_domain_dict,
+            status=200,
+        )
+
+        params = UpdateSendingDomainParams(
+            open_tracking_enabled=True,
+            click_tracking_enabled=True,
+            tracking_opt_out_enabled=True,
+            auto_unsubscribe_link_enabled=False,
+            inbound_enabled=False,
+        )
+        domain = sending_domains_api.update(DOMAIN_ID, params)
+
+        assert isinstance(domain, SendingDomain)
+        assert domain.tracking_opt_out_enabled is True
+        assert domain.auto_unsubscribe_link_enabled is False
+        assert responses.calls[0].request.body is not None
+        assert json.loads(responses.calls[0].request.body) == {
+            "sending_domain": {
+                "open_tracking_enabled": True,
+                "click_tracking_enabled": True,
+                "tracking_opt_out_enabled": True,
+                "auto_unsubscribe_link_enabled": False,
+                "inbound_enabled": False,
+            }
+        }
+
+    @responses.activate
+    def test_update_sending_domain_should_send_only_supplied_fields(
+        self, sending_domains_api: SendingDomainsApi, sample_sending_domain_dict: dict
+    ) -> None:
+        responses.patch(
+            f"{BASE_SENDING_DOMAINS_URL}/{DOMAIN_ID}",
+            json=sample_sending_domain_dict,
+            status=200,
+        )
+
+        params = UpdateSendingDomainParams(tracking_opt_out_enabled=True)
+        sending_domains_api.update(DOMAIN_ID, params)
+
+        assert responses.calls[0].request.body is not None
+        assert json.loads(responses.calls[0].request.body) == {
+            "sending_domain": {"tracking_opt_out_enabled": True}
+        }
 
     @pytest.mark.parametrize(
         "status_code,response_json,expected_error_message",

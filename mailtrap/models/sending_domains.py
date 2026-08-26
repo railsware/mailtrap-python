@@ -40,6 +40,7 @@ class SendingDomain:
     alert_recipient_email: Optional[str] = None
     dns_verified_at: Optional[str] = None
     dns_records: list[DnsRecord] = Field(default_factory=list)
+    tracking_opt_out_enabled: Optional[bool] = None
     inbound_enabled: Optional[bool] = None
     inbound_verified: Optional[bool] = None
 
@@ -47,6 +48,15 @@ class SendingDomain:
 @dataclass
 class CreateSendingDomainParams(RequestParams):
     domain_name: str
+
+
+@dataclass
+class UpdateSendingDomainParams(RequestParams):
+    open_tracking_enabled: Optional[bool] = None
+    click_tracking_enabled: Optional[bool] = None
+    tracking_opt_out_enabled: Optional[bool] = None
+    auto_unsubscribe_link_enabled: Optional[bool] = None
+    inbound_enabled: Optional[bool] = None
 
 
 @dataclass

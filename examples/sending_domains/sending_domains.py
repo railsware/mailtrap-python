@@ -25,6 +25,17 @@ def create_sending_domain(domain_name: str) -> SendingDomain:
     return sending_domains_api.create(params)
 
 
+def update_sending_domain(domain_id: int) -> SendingDomain:
+    params = mt.UpdateSendingDomainParams(
+        open_tracking_enabled=True,
+        click_tracking_enabled=True,
+        tracking_opt_out_enabled=True,
+        auto_unsubscribe_link_enabled=False,
+        inbound_enabled=False,
+    )
+    return sending_domains_api.update(domain_id, params)
+
+
 def delete_sending_domain(domain_id: int) -> DeletedObject:
     return sending_domains_api.delete(domain_id)
 
@@ -43,6 +54,9 @@ if __name__ == "__main__":
 
     domain = get_sending_domain(new_domain.id)
     print(domain)
+
+    updated_domain = update_sending_domain(new_domain.id)
+    print(updated_domain)
 
     response = send_setup_instructions(new_domain.id, "example@mail.com")
     print(response)
