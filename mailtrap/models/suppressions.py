@@ -4,6 +4,8 @@ from typing import Union
 
 from pydantic.dataclasses import dataclass
 
+from mailtrap.models.common import RequestParams
+
 
 @dataclass
 class Suppression:
@@ -23,3 +25,16 @@ class Suppression:
     message_recipient_mx_name: Optional[str] = None
     message_sender_email: Optional[str] = None
     message_subject: Optional[str] = None
+
+
+@dataclass
+class SuppressionResponse:
+    data: Suppression
+
+
+@dataclass
+class CreateSuppressionParams(RequestParams):
+    email: str
+    domain_id: int
+    sending_stream: str
+    type: Optional[str] = None

@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from typing import Any
 
@@ -8,6 +9,7 @@ from mailtrap.api.resources.suppressions import SuppressionsApi
 from mailtrap.config import GENERAL_HOST
 from mailtrap.exceptions import APIError
 from mailtrap.http import HttpClient
+from mailtrap.models.suppressions import CreateSuppressionParams
 from mailtrap.models.suppressions import Suppression
 from tests import conftest
 
@@ -169,3 +171,105 @@ class TestSuppressionsApi:
         assert deleted_suppression.type == "unsubscription"
         assert deleted_suppression.email == "recipient@example.com"
         assert deleted_suppression.sending_stream == "transactional"
+
+    @pytest.mark.parametrize(
+        "status_code,response_json,expected_error_message",
+        [
+            (
+                conftest.UNAUTHORIZED_STATUS_CODE,
+                conftest.UNAUTHORIZED_RESPONSE,
+                conftest.UNAUTHORIZED_ERROR_MESSAGE,
+            ),
+            (
+                conftest.FORBIDDEN_STATUS_CODE,
+                conftest.FORBIDDEN_RESPONSE,
+                conftest.FORBIDDEN_ERROR_MESSAGE,
+            ),
+            (
+                conftest.VALIDATION_ERRORS_STATUS_CODE,
+                {"errors": "Email is invalid"},
+                "Email is invalid",
+            ),
+            (
+                conftest.RATE_LIMIT_ERROR_STATUS_CODE,
+                conftest.RATE_LIMIT_ERROR_RESPONSE,
+                conftest.RATE_LIMIT_ERROR_MESSAGE,
+            ),
+        ],
+    )
+    @responses.activate
+    def test_create_suppression_should_raise_api_errors(
+        self,
+        suppressions_api: SuppressionsApi,
+        status_code: int,
+        response_json: dict,
+        expected_error_message: str,
+    ) -> None:
+        responses.post(
+            BASE_SUPPRESSIONS_URL,
+            status=status_code,
+            json=response_json,
+        )
+
+        with pytest.raises(APIError) as exc_info:
+            suppressions_api.create(
+                CreateSuppressionParams(
+                    email="recipient@example.com",
+                    domain_id=12345,
+                    sending_stream="transactional",
+                )
+            )
+
+        assert expected_error_message in str(exc_info.value)
+
+    @responses.activate
+    def test_create_suppression_should_send_flat_body_and_unwrap_data(
+        self, suppressions_api: SuppressionsApi, sample_suppression_dict: dict
+    ) -> None:
+        responses.post(
+            BASE_SUPPRESSIONS_URL,
+            json={"data": sample_suppression_dict},
+            status=201,
+        )
+
+        suppression = suppressions_api.create(
+            CreateSuppressionParams(
+                email="recipient@example.com",
+                domain_id=12345,
+                sending_stream="transactional",
+            )
+        )
+
+        assert isinstance(suppression, Suppression)
+        assert suppression.id == SUPPRESSION_ID
+        assert json.loads(responses.calls[0].request.body) == {
+            "email": "recipient@example.com",
+            "domain_id": 12345,
+            "sending_stream": "transactional",
+        }
+
+    @responses.activate
+    def test_create_suppression_should_send_type_when_provided(
+        self, suppressions_api: SuppressionsApi, sample_suppression_dict: dict
+    ) -> None:
+        responses.post(
+            BASE_SUPPRESSIONS_URL,
+            json={"data": sample_suppression_dict},
+            status=201,
+        )
+
+        suppressions_api.create(
+            CreateSuppressionParams(
+                email="recipient@example.com",
+                domain_id=12345,
+                sending_stream="bulk",
+                type="spam complaint",
+            )
+        )
+
+        assert json.loads(responses.calls[0].request.body) == {
+            "email": "recipient@example.com",
+            "domain_id": 12345,
+            "sending_stream": "bulk",
+            "type": "spam complaint",
+        }

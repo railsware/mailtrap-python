@@ -61,8 +61,11 @@ from .models.sending_domains import CreateSendingDomainParams
 from .models.sending_domains import SendSetupInstructionsParams
 from .models.sending_domains import UpdateSendingDomainParams
 from .models.stats import StatsFilterParams
+from .models.suppressions import CreateSuppressionParams
 from .models.templates import CreateEmailTemplateParams
 from .models.templates import UpdateEmailTemplateParams
+from .models.tracking_opt_outs import CreateTrackingOptOutParams
+from .models.tracking_opt_outs import TrackingOptOutsListParams
 from .models.webhooks import CreateWebhookParams
 from .models.webhooks import UpdateWebhookParams
 from .webhooks import verify_signature

@@ -19,6 +19,7 @@ from mailtrap.api.sending_domains import SendingDomainsBaseApi
 from mailtrap.api.suppressions import SuppressionsBaseApi
 from mailtrap.api.templates import EmailTemplatesApi
 from mailtrap.api.testing import TestingApi
+from mailtrap.api.tracking_opt_outs import TrackingOptOutsBaseApi
 from mailtrap.api.webhooks import WebhooksBaseApi
 from mailtrap.config import BULK_HOST
 from mailtrap.config import GENERAL_HOST
@@ -127,6 +128,12 @@ class MailtrapClient:
         )
 
     @property
+    def tracking_opt_outs_api(self) -> TrackingOptOutsBaseApi:
+        return TrackingOptOutsBaseApi(
+            client=HttpClient(host=GENERAL_HOST, headers=self.headers),
+        )
+
+    @property
     def company_info_api(self) -> CompanyInfoBaseApi:
         return CompanyInfoBaseApi(
             client=HttpClient(host=GENERAL_HOST, headers=self.headers),
@@ -134,8 +141,6 @@ class MailtrapClient:
 
     @property
     def email_campaigns_api(self) -> EmailCampaignsBaseApi:
-        # Token-scoped (`/api/email_campaigns`) — the account is resolved
-        # server-side from the token, so no `account_id` is required.
         return EmailCampaignsBaseApi(
             client=HttpClient(host=GENERAL_HOST, headers=self.headers),
         )

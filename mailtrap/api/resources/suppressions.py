@@ -1,7 +1,9 @@
 from typing import Optional
 
 from mailtrap.http import HttpClient
+from mailtrap.models.suppressions import CreateSuppressionParams
 from mailtrap.models.suppressions import Suppression
+from mailtrap.models.suppressions import SuppressionResponse
 
 
 class SuppressionsApi:
@@ -17,6 +19,14 @@ class SuppressionsApi:
         params = {"email": email} if email is not None else None
         response = self._client.get(self._api_path(), params=params)
         return [Suppression(**suppression) for suppression in response]
+
+    def create(self, params: CreateSuppressionParams) -> Suppression:
+        """
+        Add an email address to the account's suppression list. `type` defaults
+        to "manual import" when omitted.
+        """
+        response = self._client.post(self._api_path(), json=params.api_data)
+        return SuppressionResponse(**response).data
 
     def delete(self, suppression_id: str) -> Suppression:
         """
