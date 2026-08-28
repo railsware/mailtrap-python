@@ -40,7 +40,7 @@ class CreateApiTokenParams(RequestParams):
 
     @property
     def api_data(self) -> dict[str, Any]:
-        data = super().api_data
+        data = dict(super().api_data)
         # exclude_none strips an explicit None, but here it must be sent
         # as "expires_at": null (a token that never expires).
         if self.expires_at is None:
@@ -54,7 +54,7 @@ class ResetApiTokenParams(RequestParams):
 
     @property
     def api_data(self) -> dict[str, Any]:
-        data = super().api_data
+        data = dict(super().api_data)
         # exclude_none strips an explicit None, but here it must be sent
         # as "expires_at": null (a token that never expires).
         if self.expires_at is None:
