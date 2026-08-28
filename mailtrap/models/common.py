@@ -56,7 +56,9 @@ def _drop_unset(value: Any) -> Any:
             for key, item in value.items()
             if not isinstance(item, UnsetType)
         }
-    if isinstance(value, list):
+    # tuples are normalized to lists: api_data feeds json= and api_query_params,
+    # both of which expect lists, and JSON has no separate tuple form anyway.
+    if isinstance(value, (list, tuple)):
         return [_drop_unset(item) for item in value if not isinstance(item, UnsetType)]
     return value
 

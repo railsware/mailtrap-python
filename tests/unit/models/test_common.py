@@ -21,6 +21,12 @@ class ParentParams(RequestParams):
     items: list[NestedParams] = Field(default_factory=list)
 
 
+@dataclass
+class TupleParams(RequestParams):
+    values: tuple[Union[str, None, UnsetType], ...] = ()
+    items: tuple[NestedParams, ...] = ()
+
+
 class TestRequestParams:
     def test_api_data_should_drop_unset_values_at_any_depth(self) -> None:
         params = ParentParams(
@@ -32,6 +38,19 @@ class TestRequestParams:
 
         assert api_data == {"nested": {}, "items": [{}, {"value": "set"}]}
         assert json.dumps(api_data) == '{"nested": {}, "items": [{}, {"value": "set"}]}'
+
+    def test_api_data_should_drop_unset_values_inside_tuples(self) -> None:
+        params = TupleParams(
+            values=(UNSET, "set"),
+            items=(NestedParams(), NestedParams(value="set")),
+        )
+
+        api_data = params.api_data
+
+        assert api_data == {"values": ["set"], "items": [{}, {"value": "set"}]}
+        assert (
+            json.dumps(api_data) == '{"values": ["set"], "items": [{}, {"value": "set"}]}'
+        )
 
 
 class TestPublicExports:
