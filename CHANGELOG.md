@@ -1,3 +1,12 @@
+## [2.9.0] - 2026-08-28
+
+## What's Changed
+* Add sending domain update and company info endpoints by @mklocek in https://github.com/mailtrap/mailtrap-python/pull/79
+* Add tracking opt-outs and create-suppression endpoints by @mklocek in https://github.com/mailtrap/mailtrap-python/pull/80
+
+
+**Full Changelog**: https://github.com/mailtrap/mailtrap-python/compare/v2.8.0...v2.9.0
+
 ## [2.8.0] - 2026-08-14
 
 ## What's Changed
