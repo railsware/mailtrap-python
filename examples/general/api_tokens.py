@@ -107,8 +107,13 @@ if __name__ == "__main__":
     reset_with_expiration = reset_api_token_with_expiration(ACCOUNT_ID, reset.id)
     print(reset_with_expiration)
 
-    deleted = delete_api_token(ACCOUNT_ID, reset_with_expiration.id)
-    print(deleted)
-
-    deleted_with_expiration = delete_api_token(ACCOUNT_ID, created_with_expiration.id)
-    print(deleted_with_expiration)
+    # reset does not replace a token in place: it expires the requested one and
+    # returns a new token, so every id in the chain still has to be deleted.
+    for api_token_id in (
+        created.id,
+        created_with_expiration.id,
+        reset.id,
+        reset_with_expiration.id,
+    ):
+        deleted = delete_api_token(ACCOUNT_ID, api_token_id)
+        print(deleted)
