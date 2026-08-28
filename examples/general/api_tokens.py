@@ -31,13 +31,29 @@ def get_api_token(account_id: int, api_token_id: int) -> ApiToken:
 
 def create_api_token(account_id: int) -> ApiTokenWithToken:
     # The full token value is only returned once on the response — store it securely.
-    # Omit expires_at for the server default expiration, pass an ISO 8601
-    # date-time for an explicit expiry, or pass expires_at=None for a token
-    # that never expires.
+    # Omit expires_at for the server default expiration.
     return api_tokens_api.create(
         account_id=account_id,
         token_params=mt.CreateApiTokenParams(
             name="My API Token",
+            resources=[
+                mt.ApiTokenResource(
+                    resource_type="account",
+                    resource_id=account_id,
+                    access_level=100,
+                )
+            ],
+        ),
+    )
+
+
+def create_api_token_with_expiration(account_id: int) -> ApiTokenWithToken:
+    # Pass an ISO 8601 date-time for an explicit expiry, or expires_at=None
+    # for a token that never expires.
+    return api_tokens_api.create(
+        account_id=account_id,
+        token_params=mt.CreateApiTokenParams(
+            name="My API Token With Expiration",
             expires_at=one_year_from_now(),
             resources=[
                 mt.ApiTokenResource(
@@ -79,6 +95,9 @@ if __name__ == "__main__":
     created = create_api_token(ACCOUNT_ID)
     print(created)
 
+    created_with_expiration = create_api_token_with_expiration(ACCOUNT_ID)
+    print(created_with_expiration)
+
     fetched = get_api_token(ACCOUNT_ID, created.id)
     print(fetched)
 
@@ -90,3 +109,6 @@ if __name__ == "__main__":
 
     deleted = delete_api_token(ACCOUNT_ID, reset_with_expiration.id)
     print(deleted)
+
+    deleted_with_expiration = delete_api_token(ACCOUNT_ID, created_with_expiration.id)
+    print(deleted_with_expiration)
