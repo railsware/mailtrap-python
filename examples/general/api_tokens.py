@@ -1,4 +1,7 @@
 import os
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 
 import mailtrap as mt
 from mailtrap.models.api_tokens import ApiToken
@@ -12,6 +15,12 @@ client = mt.MailtrapClient(token=API_KEY)
 api_tokens_api = client.general_api.api_tokens
 
 
+def one_year_from_now() -> str:
+    return (datetime.now(timezone.utc) + timedelta(days=365)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
+
+
 def list_api_tokens(account_id: int) -> list[ApiToken]:
     return api_tokens_api.get_list(account_id=account_id)
 
@@ -22,6 +31,7 @@ def get_api_token(account_id: int, api_token_id: int) -> ApiToken:
 
 def create_api_token(account_id: int) -> ApiTokenWithToken:
     # The full token value is only returned once on the response — store it securely.
+    # Omit expires_at for the server default expiration.
     return api_tokens_api.create(
         account_id=account_id,
         token_params=mt.CreateApiTokenParams(
@@ -37,9 +47,41 @@ def create_api_token(account_id: int) -> ApiTokenWithToken:
     )
 
 
+def create_api_token_with_expiration(account_id: int) -> ApiTokenWithToken:
+    # Pass an ISO 8601 date-time for an explicit expiry, or expires_at=None
+    # for a token that never expires.
+    return api_tokens_api.create(
+        account_id=account_id,
+        token_params=mt.CreateApiTokenParams(
+            name="My API Token With Expiration",
+            expires_at=one_year_from_now(),
+            resources=[
+                mt.ApiTokenResource(
+                    resource_type="account",
+                    resource_id=account_id,
+                    access_level=100,
+                )
+            ],
+        ),
+    )
+
+
 def reset_api_token(account_id: int, api_token_id: int) -> ApiTokenWithToken:
     # The reset response includes the new full token value once — store it securely.
+    # Omit token_params for the server default expiration of the new token.
     return api_tokens_api.reset(account_id=account_id, api_token_id=api_token_id)
+
+
+def reset_api_token_with_expiration(
+    account_id: int, api_token_id: int
+) -> ApiTokenWithToken:
+    # Pass an ISO 8601 date-time for an explicit expiry of the new token,
+    # or expires_at=None for a token that never expires.
+    return api_tokens_api.reset(
+        account_id=account_id,
+        api_token_id=api_token_id,
+        token_params=mt.ResetApiTokenParams(expires_at=one_year_from_now()),
+    )
 
 
 def delete_api_token(account_id: int, api_token_id: int) -> DeletedObject:
@@ -53,11 +95,25 @@ if __name__ == "__main__":
     created = create_api_token(ACCOUNT_ID)
     print(created)
 
+    created_with_expiration = create_api_token_with_expiration(ACCOUNT_ID)
+    print(created_with_expiration)
+
     fetched = get_api_token(ACCOUNT_ID, created.id)
     print(fetched)
 
     reset = reset_api_token(ACCOUNT_ID, created.id)
     print(reset)
 
-    deleted = delete_api_token(ACCOUNT_ID, reset.id)
-    print(deleted)
+    reset_with_expiration = reset_api_token_with_expiration(ACCOUNT_ID, reset.id)
+    print(reset_with_expiration)
+
+    # reset does not replace a token in place: it expires the requested one and
+    # returns a new token, so every id in the chain still has to be deleted.
+    for api_token_id in (
+        created.id,
+        created_with_expiration.id,
+        reset.id,
+        reset_with_expiration.id,
+    ):
+        deleted = delete_api_token(ACCOUNT_ID, api_token_id)
+        print(deleted)

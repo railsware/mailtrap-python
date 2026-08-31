@@ -4,6 +4,7 @@ from mailtrap.http import HttpClient
 from mailtrap.models.api_tokens import ApiToken
 from mailtrap.models.api_tokens import ApiTokenWithToken
 from mailtrap.models.api_tokens import CreateApiTokenParams
+from mailtrap.models.api_tokens import ResetApiTokenParams
 from mailtrap.models.common import DeletedObject
 
 
@@ -31,6 +32,11 @@ class ApiTokensApi:
         """
         Create a new API token. The full token value is only returned once
         in the response — store it securely.
+
+        expires_at is an optional token expiration as an ISO 8601 date-time.
+        Omit it for the server default of 1 year. Pass an explicit None for
+        a token that never expires. Past or more-than-5-years-ahead values
+        are rejected with a 422 error.
         """
         response = self._client.post(
             self._api_path(account_id), json=token_params.api_data
@@ -44,13 +50,26 @@ class ApiTokensApi:
         self._client.delete(self._api_path(account_id, api_token_id))
         return DeletedObject(id=api_token_id)
 
-    def reset(self, account_id: int, api_token_id: int) -> ApiTokenWithToken:
+    def reset(
+        self,
+        account_id: int,
+        api_token_id: int,
+        token_params: Optional[ResetApiTokenParams] = None,
+    ) -> ApiTokenWithToken:
         """
         Expire the requested token and create a new token with the same
         permissions. The full new token value is returned once — store it
-        securely. Only tokens that have not already been reset can be reset.
+        securely. Tokens that have already expired cannot be reset.
+
+        expires_at is an optional expiration of the new token as an ISO 8601
+        date-time. Omit token_params or expires_at for the server default of
+        1 year. Pass an explicit None for a token that never expires. Past or
+        more-than-5-years-ahead values are rejected with a 422 error.
         """
-        response = self._client.post(f"{self._api_path(account_id, api_token_id)}/reset")
+        response = self._client.post(
+            f"{self._api_path(account_id, api_token_id)}/reset",
+            json=token_params.api_data if token_params is not None else None,
+        )
         return ApiTokenWithToken(**response)
 
     @staticmethod

@@ -8,6 +8,9 @@ from .exceptions import MailtrapError
 from .models.accounts import AccountAccessFilterParams
 from .models.api_tokens import ApiTokenResource
 from .models.api_tokens import CreateApiTokenParams
+from .models.api_tokens import ResetApiTokenParams
+from .models.common import UNSET
+from .models.common import UnsetType
 from .models.company_info import CreateCompanyInfoParams
 from .models.company_info import UpdateCompanyInfoParams
 from .models.contacts import ContactEventParams
