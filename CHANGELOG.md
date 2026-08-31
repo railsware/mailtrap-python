@@ -1,3 +1,13 @@
+## [2.10.0] - 2026-08-31
+
+## What's Changed
+* MT-23076: support api token expiration in create and reset by @oshchyhol in https://github.com/mailtrap/mailtrap-python/pull/77
+
+## New Contributors
+* @oshchyhol made their first contribution in https://github.com/mailtrap/mailtrap-python/pull/77
+
+**Full Changelog**: https://github.com/mailtrap/mailtrap-python/compare/v2.9.0...v2.10.0
+
 ## [2.9.0] - 2026-08-28
 
 ## What's Changed
